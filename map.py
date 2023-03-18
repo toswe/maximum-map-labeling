@@ -9,20 +9,8 @@ class Map:
         self.seed = seed
         self.points = set()
 
-    def generate_map(self):
-        """
-        A function that generates random points with their coordinates and limits
-        with Map objet's parametars
+    def _update_limits(self):
         
-        """
-        random.seed(self.seed)
-        for i in range(self.num_of_points):
-            point = Point(random.uniform(0, self.map_size), random.uniform(0, self.map_size))
-            if point in self.points:
-                i -= 1
-            else:
-                self.points.add(point)
-
         for point1, point2 in itertools.combinations(self.points, 2):
             distance = point1.distance(point2)
             if point1.x < point2.x:
@@ -44,4 +32,24 @@ class Map:
                     point1.sw = min(point1.sw, distance)
                     point2.ne = min(point2.ne, distance)
 
-        return self.points
+
+
+    def generate(self):
+        """
+        A function that generates random points with their coordinates and limits
+        with Map objet's parametars
+        
+        """
+        random.seed(self.seed)
+        i = 0
+        while i < self.num_of_points:
+            point = Point(random.uniform(0, self.map_size), random.uniform(0, self.map_size))
+            if point in self.points:
+                continue
+            else:
+                self.points.add(point)
+                i += 1
+
+        self._update_limits()
+
+        return list(self.points)
