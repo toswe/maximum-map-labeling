@@ -2,7 +2,7 @@ import generate
 import utils
 import searches
 import typer
-from typerMML import OPTION_NUM_POINTS, OPTION_MAP_SIZE, OPTION_SEED 
+
 
 app = typer.Typer()
 
@@ -14,9 +14,10 @@ run:
 
 app.command()
 def main(
-        num_points: int = OPTION_NUM_POINTS,
-        map_size: float = OPTION_MAP_SIZE,
-        seed: str = OPTION_SEED
+        num_points: int = typer.Option('10', '--num_points', '-n', 
+                                       help = "Number of points to be generated"),
+        map_size: float = typer.Option('100', '--map_size', '-m', help = "Size of the squared map"),
+        seed: str = typer.Option('aNiceSeed', '--seed', '-s', help = "Name of the seed")
 ) ->None:
     POINTS = generate.generate_points(num_points, map_size, seed)
     print('Generated points:', POINTS)
