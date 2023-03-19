@@ -1,15 +1,11 @@
 import generate
 import utils
 import searches
-
-# TODO Change these to input parameters
-NUM_OF_POINTS = 10
-MAP_SIZE = 100
-SEED = 'aNiceSeed'
+import argparse
 
 
-def main():
-    points = generate.generate_points(NUM_OF_POINTS, MAP_SIZE, SEED)
+def main(num_of_points, map_size, seed):
+    points = generate.generate_points(num_of_points, map_size, seed)
     print('Generated points:', points)
 
     # If there exists a square size and placment in which no squares
@@ -41,4 +37,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--points', type = int, default = 10, help='number of points')
+    parser.add_argument('-m', '--map_size', type = float, default = 100.0, help='size of map')
+    parser.add_argument('-s', '--seed', type = str, default = 'aNiceSeed', help='random seed')
+    args = parser.parse_args()
+    main(args.points, args.map_size, args.seed)
