@@ -41,14 +41,10 @@ class Map:
         
         """
         random.seed(self.seed)
-        i = 0
-        while i < self.num_of_points:
+
+        while len(self.points) < self.num_of_points:
             point = Point(random.uniform(0, self.map_size), random.uniform(0, self.map_size))
-            if point in self.points:
-                continue
-            else:
-                self.points.add(point)
-                i += 1
+            self.points.add(point)
 
         self._update_limits()
 

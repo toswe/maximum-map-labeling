@@ -12,3 +12,11 @@ class Point:
     
     def distance(self, point): 
         return min(abs(self.x - point.x), abs(self.y - point.y))
+    
+    def __eq__(self, point):
+        if isinstance(point, Point):
+            return self.x == point.x and self.y == point.y
+        return False
+
+    def __hash__(self):
+        return hash((self.x, self.y))
