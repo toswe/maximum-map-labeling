@@ -3,6 +3,8 @@ import utils
 import searches
 import argparse
 
+MAP_SIZE = 100.0
+SEED = 'aNiceSeed'
 
 def main(num_of_points, map_size, seed):
     points = generate.generate_points(num_of_points, map_size, seed)
@@ -38,8 +40,8 @@ def main(num_of_points, map_size, seed):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--points', type = int, default = 10, help='number of points')
-    parser.add_argument('-m', '--map_size', type = float, default = 100.0, help='size of map')
-    parser.add_argument('-s', '--seed', type = str, default = 'aNiceSeed', help='random seed')
+    parser.add_argument('-p', '--points', type = int)
+    parser.add_argument('-m', '--map-size', type = float, default = MAP_SIZE)
+    parser.add_argument('-s', '--seed', type = str, default = SEED)
     args = parser.parse_args()
     main(args.points, args.map_size, args.seed)
