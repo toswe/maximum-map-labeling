@@ -2,6 +2,7 @@ from point import Point
 import random
 import itertools
 
+
 class Map:
     def __init__(self, num_of_points, map_size, seed):
         self.num_of_points = num_of_points
@@ -9,7 +10,8 @@ class Map:
         self.seed = seed
         self.points = set()
 
-    def _update_limits(self):
+
+    def _update_point_limits(self):
         
         for point1, point2 in itertools.combinations(self.points, 2):
             distance = point1.distance(point2)
@@ -33,7 +35,6 @@ class Map:
                     point2.ne = min(point2.ne, distance)
 
 
-
     def generate(self):
         """
         A function that generates random points with their coordinates and limits
@@ -46,6 +47,6 @@ class Map:
             point = Point(random.uniform(0, self.map_size), random.uniform(0, self.map_size))
             self.points.add(point)
 
-        self._update_limits()
+        self._update_point_limits()
 
         return list(self.points)
