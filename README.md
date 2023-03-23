@@ -10,3 +10,9 @@ https://www.mdpi.com/2220-9964/6/11/342/htm
 http://www.lac.inpe.br/~lorena/missae/sbc_Missae.pdf
 http://www.cs.uu.nl/research/techreps/repo/CS-2000/2000-22.pdf
 https://www.ac.tuwien.ac.at/wp/wp-content/uploads/Martin-N%C3%B6llenburg-dynlab.pdf
+
+
+## Napomene
+
+Sever je pozitivno y.
+Istok je pozitivno x.

@@ -6,19 +6,25 @@ class Square:
         if orientation not in ORIENTATIONS:
             raise f"Wrong sqaure orientation '{orientation}'."
 
-        if orientation[1] == 'e':
-            self.edge_up = point.x + size
-            self.edge_down = point.x
-        else:
-            self.edge_up = point.x
-            self.edge_down = point.x - size
-
         if orientation[0] == 'n':
-            self.edge_left = point.y + size
-            self.edge_right = point.y
+            self.edge_up = point.y + size
+            self.edge_down = point.y
         else:
+            self.edge_up = point.y
+            self.edge_down = point.y - size
+
+        if orientation[1] == 'e':
+            self.edge_right = point.y + size
             self.edge_left = point.y
-            self.edge_right = point.y - size
+        else:
+            self.edge_right = point.y
+            self.edge_left = point.y - size
+
+
+    def __str__(self) -> str:
+        return "(x: {:.2f} {:.2f}, y: {:.2f} {:.2f})".format(
+            self.edge_left, self.edge_right, self.edge_down, self.edge_up
+        )
 
 
     def has_overlap(self, square):
