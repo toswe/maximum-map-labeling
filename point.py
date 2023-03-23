@@ -5,7 +5,7 @@ class Point:
 
 
     def distance(self, point): 
-        return min(abs(self.x - point.x), abs(self.y - point.y))
+        return max(abs(self.x - point.x), abs(self.y - point.y))
     
 
     def __eq__(self, point):
