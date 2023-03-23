@@ -1,13 +1,16 @@
-import generate
 import utils
 import searches
 import argparse
 
+from map import Map
+
 MAP_SIZE = 100.0
 SEED = 'aNiceSeed'
 
+
 def main(num_of_points, map_size, seed):
-    points = generate.generate_points(num_of_points, map_size, seed)
+    the_map = Map(num_of_points, map_size, seed)
+    points = list((point.x, point.y) for point in the_map.get_points()) # TODO Change this
     print('Generated points:', points)
 
     # If there exists a square size and placment in which no squares
@@ -16,9 +19,9 @@ def main(num_of_points, map_size, seed):
     # until some two squares touch each other.
     # Thus there are a limited number of possible square sizes
     # that can possibly be optimal.
-    square_size_candidates = utils.get_possible_square_sizes(
-        utils.get_point_limits(points)
-    )
+
+    square_size_candidates = the_map.get_possible_square_sizes()
+
     print('Possible square size candidates:')
     print(len(square_size_candidates), square_size_candidates)
     print()
