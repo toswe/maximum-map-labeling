@@ -1,5 +1,6 @@
 ORIENTATIONS = {'ne', 'nw', 'sw', 'se'}
 
+OPPOSITE_ORIENTATIONS = {'ne' : 'sw', 'nw' : 'se', 'sw' : 'ne', 'se' : 'nw'}
 
 class Square:
     def __init__(self, point, orientation, size) -> None:
@@ -30,6 +31,13 @@ class Square:
             self.edge_left, self.edge_right, self.edge_down, self.edge_up
         )
 
+    def __eq__(self, square):
+        if isinstance(square, Square):
+            return self.point == square.point and self.orientation == square.orientation and self.size == square.size
+        return False
+
+    def __hash__(self):
+        return hash((self.point, self.orientation, self.size))
 
     def has_overlap(self, square):
         if self.edge_left < square.edge_right and \
@@ -39,7 +47,6 @@ class Square:
             return True
         return False
 
-
     def has_point(self, point):
         if (
                 self.edge_down < point.y < self.edge_up
@@ -47,3 +54,6 @@ class Square:
         ):
             return True
         return False
+
+    def get_opposite_orientation(self):
+        return OPPOSITE_ORIENTATIONS[self.orientation]
