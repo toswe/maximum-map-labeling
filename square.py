@@ -3,6 +3,10 @@ ORIENTATIONS = {'ne', 'nw', 'sw', 'se'}
 
 class Square:
     def __init__(self, point, orientation, size) -> None:
+        self.point = point
+        self.orientation = orientation
+        self.size = size
+
         if orientation not in ORIENTATIONS:
             raise f"Wrong sqaure orientation '{orientation}'."
 
@@ -14,11 +18,11 @@ class Square:
             self.edge_down = point.y - size
 
         if orientation[1] == 'e':
-            self.edge_right = point.y + size
-            self.edge_left = point.y
+            self.edge_right = point.x + size
+            self.edge_left = point.x
         else:
-            self.edge_right = point.y
-            self.edge_left = point.y - size
+            self.edge_right = point.x
+            self.edge_left = point.x - size
 
 
     def __str__(self) -> str:
@@ -34,3 +38,7 @@ class Square:
             self.edge_down < square.edge_up:
             return True
         return False
+
+
+    def has_point(self, point):
+        pass
