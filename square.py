@@ -41,4 +41,9 @@ class Square:
 
 
     def has_point(self, point):
-        pass
+        if (
+                self.edge_down < point.y < self.edge_up
+                and self.edge_left < point.x < self.edge_right
+        ):
+            return True
+        return False
