@@ -47,4 +47,8 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--map-size', type = float, default = MAP_SIZE)
     parser.add_argument('-s', '--seed', type = str, default = SEED)
     args = parser.parse_args()
-    main(args.points, args.map_size, args.seed)
+
+    if not args.points:
+        print("Please provide the number of points by specifiing the '-p' flag.")
+    else:
+        main(args.points, args.map_size, args.seed)
