@@ -1,5 +1,5 @@
 import utils
-import searches
+import searches_old
 import argparse
 
 from map import Map
@@ -30,7 +30,7 @@ def main(num_of_points, map_size, seed):
     # possible square sizes and find the largest one which
     # has a square placing that is valid.
     opt_bound, opt_placings = utils.binary_search(
-        square_size_candidates, points, searches.brute_force)
+        square_size_candidates, points, searches_old.brute_force)
 
     # opt_bound, opt_placings = binary_search(POINTS, SQUARE_SIZE_CANDIDATES, searches.moj_src)
 
