@@ -3,6 +3,7 @@ import searches_old
 import argparse
 
 from map import Map
+from searches.brute_force import BruteForce
 
 MAP_SIZE = 100.0
 SEED = 'aNiceSeed'
@@ -29,8 +30,12 @@ def main(num_of_points, map_size, seed):
     # We can then do a binary search through those
     # possible square sizes and find the largest one which
     # has a square placing that is valid.
-    opt_bound, opt_placings = utils.binary_search(
-        square_size_candidates, points, searches_old.brute_force)
+
+    # opt_bound, opt_placings = utils.binary_search(
+    #     square_size_candidates, points, searches_old.brute_force)
+
+    bf = BruteForce(the_map.points)
+    opt_bound, opt_placings = bf.binary_search(square_size_candidates)
 
     # opt_bound, opt_placings = binary_search(POINTS, SQUARE_SIZE_CANDIDATES, searches.moj_src)
 
