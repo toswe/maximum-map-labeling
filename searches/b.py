@@ -20,6 +20,16 @@ class B(Search):
 
         return conflicts
     
+    def get_non_conflicts(self, conflicts):
+        non_conflicts = dict()
+        for point in self.points:
+            for square in point.squares:
+                if square not in conflicts:
+                    if point not in non_conflicts:
+                        non_conflicts[point] = []
+                    non_conflicts[point].append(square)
+        return non_conflicts
+    
     def _phase_1(self, size):
         for point in self.points:
             point.squares = [Square(point, orientation, size) for orientation in ORIENTATIONS]
@@ -37,7 +47,8 @@ class B(Search):
         for point in self.points:
             square_list = square_list + point.squares
 
-        return B.get_conflicts(square_list)
+        conflicts = B.get_conflicts(square_list)
+        return conflicts, self.get_non_conflicts(conflicts)
     
     def remove_candidat(candidat, conflicts):
         if candidat in conflicts:
@@ -50,33 +61,40 @@ class B(Search):
         return conflicts
             
     def _phase_2(self, size):
-        conflicts = self._phase_1(size)
-        # stack = []
+        conflicts, non_conflicts = self._phase_1(size)
+        stack = []
 
-        for point in self.points:
-            non_conflict_squares = [square for square in point.squares if square not in conflicts]
+        for p in self.points:
+            stack.append(p)
+            pop = True
 
-            if len(point.squares) == 0:
-                return f"There is no solution for squares of size {size}"
+            for point in stack:
+                if len(point.squares) == 0:
+                    return f"There is no solution for squares of size {size}"
 
-            elif non_conflict_squares:
-                chosen_square = random.choice(non_conflict_squares)
-                for square in point.squares:
-                    if square != chosen_square:
+                elif point in non_conflicts:
+                    if non_conflicts[point]:
+                        chosen_square = random.choice(non_conflicts[point])
+                        for square in point.squares:
+                            if square != chosen_square:
+                                conflicts = B.remove_candidat(square, conflicts)
+                        if point not in stack:
+                            pop = False
+
+                elif len(point.squares) == 1:
+                    for square in conflicts[point.squares[0]]:
                         conflicts = B.remove_candidat(square, conflicts)
-                # stack.append(chosen_square)
+                    if point not in stack:
+                        pop = False
 
-            elif len(point.squares) == 1:
-                for square in conflicts[point.squares[0]]:
-                    conflicts = B.remove_candidat(square, conflicts)
-                # stack.append(point.squares[0])
-
-            else:
-                for square in point.squares:
-                    for sq1, sq2 in itertools.combinations(conflicts[square], 2):
-                        if sq1.point == sq2.point:
-                            B.remove_candidat(square, conflicts)
-                            break
+                else:
+                    for square in point.squares:
+                        for sq1, sq2 in itertools.combinations(conflicts[square], 2):
+                            if sq1.point == sq2.point:
+                                B.remove_candidat(square, conflicts)
+                                break
+                if pop:
+                    stack.pop()
 
         return conflicts
 
