@@ -1,4 +1,5 @@
 import itertools
+from random import random
 
 from searches.search import Search
 from square import Square, ORIENTATIONS
@@ -37,36 +38,53 @@ class B(Search):
             square_list = square_list + point.squares
 
         return B.get_conflicts(square_list)
+    
+    def remove_candidat(candidat, conflicts):
+        if candidat in conflicts:
+            for square in conflicts[candidat]:
+                conflicts[square].remove(candidat)
+            del conflicts[candidat]
 
+        candidat.point.squares.remove(candidat)
 
+        return conflicts
+            
     def _phase_2(self, size):
-        pass
+        conflicts = self._phase_1(size)
+        # stack = []
+
+        for point in self.points:
+            non_conflict_squares = [square for square in point.squares if square not in conflicts]
+
+            if len(point.squares) == 0:
+                return f"There is no solution for squares of size {size}"
+
+            elif non_conflict_squares:
+                chosen_square = random.choice(non_conflict_squares)
+                for square in point.squares:
+                    if square != chosen_square:
+                        conflicts = B.remove_candidat(square, conflicts)
+                # stack.append(chosen_square)
+
+            elif len(point.squares) == 1:
+                for square in conflicts[point.squares[0]]:
+                    conflicts = B.remove_candidat(square, conflicts)
+                # stack.append(point.squares[0])
+
+            else:
+                for square in point.squares:
+                    for sq1, sq2 in itertools.combinations(conflicts[square], 2):
+                        if sq1.point == sq2.point:
+                            B.remove_candidat(square, conflicts)
+                            break
+
+        return conflicts
 
     def _phase_3(self, size):
         pass
 
     def search(self, square_size):
 
-        self._phase_2(square_size)
         self._phase_3(square_size)
 
-        return self._phase_1(square_size)
-        
-
-
-
-
-
-
-
-# prekklapanja = {
-#     tacka 1.1 : [tacakap1, tackap2,...]
-#     tacka 1.2 : [tacakap1, tackap2,...]
-# }
-
-
-
-# def remove_sq_from_konf(konf,sq):
-#     for sq1 in konf[sq]:
-#         konf[sq1].remove(sq)
-        
+        return self._phase_2(square_size)
