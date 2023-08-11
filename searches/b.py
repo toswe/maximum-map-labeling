@@ -78,13 +78,13 @@ class B(Search):
                         for square in point.squares:
                             if square != chosen_square:
                                 conflicts = B.remove_candidat(square, conflicts)
-                        if point not in stack[:-1]:
+                        if point == stack[-1]:
                             pop = False
 
                 elif len(point.squares) == 1:
                     for square in conflicts[point.squares[0]]:
                         conflicts = B.remove_candidat(square, conflicts)
-                    if point not in stack[:-1]:
+                    if point == stack[-1]:
                         pop = False
 
                 else:
@@ -93,8 +93,8 @@ class B(Search):
                             if sq1.point == sq2.point:
                                 B.remove_candidat(square, conflicts)
                                 break
-                if pop:
-                    stack.pop()
+            if pop:
+                stack.pop()
 
         return conflicts
 
