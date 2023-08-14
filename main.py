@@ -4,6 +4,7 @@ import argparse
 
 from map import Map
 from searches.brute_force import BruteForce
+from searches.b import B
 
 MAP_SIZE = 100.0
 SEED = 'aNiceSeed'
@@ -36,6 +37,18 @@ def main(num_of_points, map_size, seed):
 
     bf = BruteForce(the_map.points)
     opt_bound, opt_placings = bf.binary_search(square_size_candidates)
+
+    print('The largest area of the squares:')
+    print((opt_bound ** 2) * len(points))
+    print()
+    print("Optimal square size and placings:")
+    print(opt_bound, opt_placings)
+    print()
+    print('#####################################################')
+    print()
+
+    b = B(the_map.points)
+    opt_bound, opt_placings = b.binary_search(square_size_candidates)
 
     # opt_bound, opt_placings = binary_search(POINTS, SQUARE_SIZE_CANDIDATES, searches.moj_src)
 
