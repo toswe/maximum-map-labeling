@@ -20,7 +20,7 @@ class Search:
 
         best_placing = self.search(squre_sizes[u_bound])
         if best_placing:
-            return u_bound, list(zip(best_placing))
+            return squre_sizes[u_bound], list(zip(self.points, best_placing))
 
         best_placing = self.search(squre_sizes[l_bound])
 

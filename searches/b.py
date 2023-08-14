@@ -1,5 +1,5 @@
 import itertools
-from random import random
+import random
 
 from searches.search import Search
 from square import Square, ORIENTATIONS
