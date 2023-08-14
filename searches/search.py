@@ -3,7 +3,16 @@ class Search:
         self.points = points
 
     def search(self, square_size):
-        pass
+        """
+        Args:
+            squre_size - the size of square to search for
+
+        Returns:
+            False - if there is no solution for that size
+            square_orientations - if there is a solution for this size
+
+        """
+        raise Exception("Not implemented.")
 
     def binary_search(self, squre_sizes):
         """
