@@ -3,6 +3,8 @@
 https://www.csc.kth.se/~viggo/wwwcompendium/node269.html#8287
 
 ## Radovi
+https://www.sciencedirect.com/science/article/pii/S0925772196000077
+
 https://dspace.cvut.cz/bitstream/handle/10467/69496/F3-DP-2017-Chamra-Tomas-thesis.pdf
 https://arxiv.org/pdf/1712.05936.pdf
 http://www.eecs.harvard.edu/~shieber/Biblio/Papers/tog-final.pdf
