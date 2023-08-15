@@ -62,6 +62,7 @@ class B(Search):
     def _phase_2(self, size):
         conflicts, non_conflicts = self._phase_1(size)
         stack = []
+        stack_good = []
         for p in self.points:
             stack.append(p)
             pop = False
@@ -77,11 +78,17 @@ class B(Search):
                                 conflicts = B.remove_candidat(square, conflicts)
                         if point == stack[-1]:
                             pop = True
+                            stack_good.append(chosen_square)
+
                 elif len(point.squares) == 1:
                     for square in conflicts[point.squares[0]]:
+                        if square in stack_good:
+                            return False
                         conflicts = B.remove_candidat(square, conflicts)
                     if point == stack[-1]:
                         pop = True
+                        stack_good.append(square)
+
                 else:
                     for square in point.squares:
                         for sq1, sq2 in itertools.combinations(conflicts[square], 2):
@@ -90,6 +97,15 @@ class B(Search):
                                 break
             if pop:
                 stack.pop()
+
+        for point in self.points:
+            if len(point.squares) == 0:
+                return False
+            if len(point.squares) > 1:
+                hold = point.squares[0]
+                for square in point.squares:   
+                    B.remove_candidat(square, conflicts)
+                point.squares.append(hold)
 
         square_orientation = [point.squares[0].orientation for point in self.points]
 
