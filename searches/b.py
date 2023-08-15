@@ -55,7 +55,6 @@ class B(Search):
             for square in conflicts[candidat]:
                 conflicts[square].remove(candidat)
             del conflicts[candidat]
-
         candidat.point.squares.remove(candidat)
 
         return conflicts
@@ -63,14 +62,12 @@ class B(Search):
     def _phase_2(self, size):
         conflicts, non_conflicts = self._phase_1(size)
         stack = []
-
         for p in self.points:
             stack.append(p)
-            pop = True
-
+            pop = False
             for point in stack:
                 if len(point.squares) == 0:
-                    return f"There is no solution for squares of size {size}"
+                    return False
 
                 elif point in non_conflicts:
                     if non_conflicts[point]:
@@ -79,24 +76,24 @@ class B(Search):
                             if square != chosen_square:
                                 conflicts = B.remove_candidat(square, conflicts)
                         if point == stack[-1]:
-                            pop = False
-
+                            pop = True
                 elif len(point.squares) == 1:
                     for square in conflicts[point.squares[0]]:
                         conflicts = B.remove_candidat(square, conflicts)
                     if point == stack[-1]:
-                        pop = False
-
+                        pop = True
                 else:
                     for square in point.squares:
                         for sq1, sq2 in itertools.combinations(conflicts[square], 2):
-                            if sq1.point == sq2.point:
+                            if sq1.point == sq2.point and len(sq1.point.squares) == 2:
                                 B.remove_candidat(square, conflicts)
                                 break
             if pop:
                 stack.pop()
 
-        return conflicts
+        square_orientation = [point.squares[0].orientation for point in self.points]
+
+        return square_orientation
 
     def _phase_3(self, size):
         pass
