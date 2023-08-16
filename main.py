@@ -1,6 +1,6 @@
-import utils
-import searches_old
 import argparse
+
+from matplotlib import pyplot as plt
 
 from map import Map
 from searches.brute_force import BruteForce
@@ -8,6 +8,12 @@ from searches.b import B
 
 MAP_SIZE = 100.0
 SEED = 'aNiceSeed'
+
+
+def _plot_squares(squares):
+    for square in squares:
+        square.plot()
+    plt.show()
 
 
 def main(num_of_points, map_size, seed):
@@ -36,27 +42,30 @@ def main(num_of_points, map_size, seed):
     #     square_size_candidates, points, searches_old.brute_force)
 
     bf = BruteForce(the_map.points)
-    opt_bound, opt_placings = bf.binary_search(square_size_candidates)
+    bf_squares = bf.binary_search(square_size_candidates)
 
     print('The largest area of the squares:')
-    print((opt_bound ** 2) * len(points))
+    print((bf_squares[0].size ** 2) * len(points))
     print()
     print("Optimal square size and placings:")
-    print(opt_bound, opt_placings)
+    print(bf_squares)
     print()
     print('#####################################################')
     print()
 
-    b = B(the_map.points)
-    opt_bound, opt_placings = b.binary_search(square_size_candidates)
+    # b = B(the_map.points)
+    # b_squares = b.binary_search(square_size_candidates)
 
-    # opt_bound, opt_placings = binary_search(POINTS, SQUARE_SIZE_CANDIDATES, searches.moj_src)
+    # # opt_bound, opt_placings = binary_search(POINTS, SQUARE_SIZE_CANDIDATES, searches.moj_src)
 
-    print('The largest area of the squares:')
-    print((opt_bound ** 2) * len(points))
-    print()
-    print("Optimal square size and placings:")
-    print(opt_bound, opt_placings)
+    # print('The largest area of the squares:')
+    # print((b_squares[0].size ** 2) * len(points))
+    # print()
+    # print("Optimal square size and placings:")
+    # print(b_squares)
+
+    _plot_squares(bf_squares)
+    # _plot_squares(b_squares)
 
 
 if __name__ == "__main__":

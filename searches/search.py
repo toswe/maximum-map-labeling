@@ -20,8 +20,7 @@ class Search:
             squre_sizes - a list of possible sqare sizes (list(float))
 
         Returns:
-            optimal_square_size - float
-            points_and_their_orientation - list( ((float, float), int) )
+            best_placing - list( Square )
 
         """
         l_bound = 0
@@ -29,7 +28,7 @@ class Search:
 
         best_placing = self.search(squre_sizes[u_bound])
         if best_placing:
-            return squre_sizes[u_bound], list(zip(self.points, best_placing))
+            return best_placing
 
         best_placing = self.search(squre_sizes[l_bound])
 
@@ -43,8 +42,4 @@ class Search:
                 u_bound = m_bound
             if u_bound - l_bound <= 1:
                 break
-
-        optimal_square_size = squre_sizes[l_bound]
-        points_and_their_orientation = list(zip(self.points, best_placing))
-
-        return optimal_square_size, points_and_their_orientation
+        return best_placing

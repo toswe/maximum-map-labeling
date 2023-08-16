@@ -19,7 +19,7 @@ class BruteForce(Search):
         for first, second in itertools.combinations(squares, 2):
             if first.has_overlap(second):
                 return False
-        return True
+        return squares
 
 
     def search(self, square_size):
@@ -30,6 +30,6 @@ class BruteForce(Search):
         If one is valid returns the square placing combination, otherwise it returns False.
         """
         for square_placings in itertools.product(ORIENTATIONS, repeat=len(self.points)):
-            if self._test_placings(square_placings, square_size):
-                return square_placings
+            if squares := self._test_placings(square_placings, square_size):
+                return squares
         return False

@@ -1,6 +1,9 @@
+from matplotlib import pyplot as plt
+
 ORIENTATIONS = {'ne', 'nw', 'sw', 'se'}
 
 OPPOSITE_ORIENTATIONS = {'ne' : 'sw', 'nw' : 'se', 'sw' : 'ne', 'se' : 'nw'}
+
 
 class Square:
     def __init__(self, point, orientation, size) -> None:
@@ -27,9 +30,7 @@ class Square:
 
 
     def __str__(self) -> str:
-        return "(x: {:.2f} {:.2f}, y: {:.2f} {:.2f})".format(
-            self.edge_left, self.edge_right, self.edge_down, self.edge_up
-        )
+        return f"({self.point}, '{self.orientation}')"
 
     def __eq__(self, square):
         if isinstance(square, Square):
@@ -57,3 +58,10 @@ class Square:
 
     def get_opposite_orientation(self):
         return OPPOSITE_ORIENTATIONS[self.orientation]
+
+    def plot(self):
+        plt.scatter([self.point.x], [self.point.y])
+        plt.plot(
+            [self.edge_left, self.edge_right, self.edge_right, self.edge_left, self.edge_left],
+            [self.edge_down, self.edge_down, self.edge_up, self.edge_up, self.edge_down],
+        )
