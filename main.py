@@ -41,31 +41,25 @@ def main(num_of_points, map_size, seed):
     # opt_bound, opt_placings = utils.binary_search(
     #     square_size_candidates, points, searches_old.brute_force)
 
-    bf = BruteForce(the_map.points)
-    bf_squares = bf.binary_search(square_size_candidates)
+    search_algorithms = [
+        BruteForce,
+        B,
+    ]
 
-    print('The largest area of the squares:')
-    print((bf_squares[0].size ** 2) * len(points))
-    print()
-    print("Optimal square size and placings:")
-    print(bf_squares)
-    print()
-    print('#####################################################')
-    print()
+    for algorithm in search_algorithms:
+        search = algorithm(the_map.points)
+        squares = search.binary_search(square_size_candidates)
 
-    # b = B(the_map.points)
-    # b_squares = b.binary_search(square_size_candidates)
+        print('The largest area of the squares:')
+        print((squares[0].size ** 2) * len(points))
+        print()
+        print("Optimal square size and placings:")
+        print(squares)
+        print()
+        print('#####################################################')
+        print()
 
-    # # opt_bound, opt_placings = binary_search(POINTS, SQUARE_SIZE_CANDIDATES, searches.moj_src)
-
-    # print('The largest area of the squares:')
-    # print((b_squares[0].size ** 2) * len(points))
-    # print()
-    # print("Optimal square size and placings:")
-    # print(b_squares)
-
-    _plot_squares(bf_squares)
-    # _plot_squares(b_squares)
+        _plot_squares(squares)
 
 
 if __name__ == "__main__":
