@@ -32,6 +32,9 @@ class Square:
     def __str__(self) -> str:
         return f"({self.point}, '{self.orientation}')"
 
+    def __repr__(self):
+        return self.__str__()
+
     def __eq__(self, square):
         if isinstance(square, Square):
             return self.point == square.point and self.orientation == square.orientation and self.size == square.size
@@ -41,10 +44,12 @@ class Square:
         return hash((self.point, self.orientation, self.size))
 
     def has_overlap(self, square):
-        if self.edge_left < square.edge_right and \
-            self.edge_right > square.edge_left and \
-            self.edge_up > square.edge_down and \
-            self.edge_down < square.edge_up:
+        if (
+                self.edge_left  < square.edge_right
+            and self.edge_right > square.edge_left
+            and self.edge_up    > square.edge_down
+            and self.edge_down  < square.edge_up
+        ):
             return True
         return False
 
