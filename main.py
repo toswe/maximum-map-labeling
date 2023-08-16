@@ -10,10 +10,11 @@ MAP_SIZE = 100.0
 SEED = 'aNiceSeed'
 
 
-def _plot_squares(squares):
+def _plot_squares(squares, title):
+    subplot = plt.figure().add_subplot()
+    subplot.title.set_text(title)
     for square in squares:
-        square.plot()
-    plt.show()
+        square.plot(subplot)
 
 
 def main(num_of_points, map_size, seed):
@@ -50,17 +51,17 @@ def main(num_of_points, map_size, seed):
         search = algorithm(the_map.points)
         squares = search.binary_search(square_size_candidates)
 
-        print('The largest area of the squares:')
-        print((squares[0].size ** 2) * len(points))
-        print()
-        print("Optimal square size and placings:")
+        print("Optimal size: {:.2f}".format(squares[0].size))
+        print(f"Largest area: {int(squares[0].size ** 2) * len(points)}")
+        print("Placings:")
         print(squares)
         print()
         print('#####################################################')
         print()
 
-        _plot_squares(squares)
+        _plot_squares(squares, search.__class__.__name__)
 
+    plt.show()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
