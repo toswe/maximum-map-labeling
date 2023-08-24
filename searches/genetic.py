@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 
 from searches.search import Search
 from geometry.square import ORIENTATIONS, ProtoSquare, Square
@@ -15,7 +16,7 @@ class Individual:
         self._generate_squares()
 
         self.fitness = 0
-        self.calculate_fitness()
+        self._calculate_fitness()
 
     def __lt__(self, other):
         return self.fitness < other.fitness
@@ -23,7 +24,7 @@ class Individual:
     def _generate_squares(self):
         self.squares = [Square(psq, self.size) for psq in self.proto_squares]
 
-    def calculate_fitness(self):
+    def _calculate_fitness(self):
         if Square.check_overlap(self.squares):
             return 0
         return self.size
@@ -52,7 +53,23 @@ class Individual:
         if self._mutate_size():
             self._generate_squares()
 
-        self.calculate_fitness()
+        self._calculate_fitness()
+
+    def _update(self, proto_squares, size):
+        self.proto_squares = deepcopy(proto_squares)
+        self.size = size
+        self._generate_squares()
+        self._calculate_fitness()
+
+    @staticmethod
+    def crossover(parent1, parent2, child1, child2):
+        split_index = random.randrange(len(parent1.proto_squares))
+
+        proto_squares_1 = parent1.proto_squares[:split_index] + parent2.proto_squares[split_index:]
+        proto_squares_2 = parent2.proto_squares[:split_index] + parent1.proto_squares[split_index:]
+
+        child1._update(proto_squares_1, parent1.size)
+        child2._update(proto_squares_2, parent2.size)
 
 
 class Genetic(Search):
@@ -76,9 +93,6 @@ class Genetic(Search):
     def _selection(self, population):
         return population[0] # TODO
 
-    def _crossover(self, parent1, parent2, child1, child2):
-        pass # TODO Maybe change this to static
-
     def search(self):
         population = [Individual(self.map) for _ in range(self.population_size)]
         new_population = [Individual(self.map) for _ in range(self.population_size)]
@@ -92,11 +106,11 @@ class Genetic(Search):
                 child1, child2 = new_population[i], new_population[i+1]
                 parent1, parent2 = self._selection(population), self._selection(population)
 
-                self._crossover(parent1, parent2, child1, child2)
+                Individual.crossover(parent1, parent2, child1, child2)
 
                 child1.mutate()
                 child2.mutate()
 
-                population = new_population # TODO Copy this
+            population = new_population # TODO Copy this
 
         return max(population).squares
