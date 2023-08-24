@@ -11,7 +11,8 @@ class BruteForce(OptimalSearch):
             square_size - size of the square (float)
             square_orientations - A list of sqaure orientations for each point
         Returns:
-            boolean
+            False - if the placing isn't possible
+            list( Square ) - if the placing is found
 
         """
         squares = [Square(p, o, square_size) for (p, o) in zip(self.points, square_orientations)]

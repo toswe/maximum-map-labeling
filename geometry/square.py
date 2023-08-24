@@ -1,7 +1,11 @@
 ORIENTATIONS = {'ne', 'nw', 'sw', 'se'}
-
 OPPOSITE_ORIENTATIONS = {'ne' : 'sw', 'nw' : 'se', 'sw' : 'ne', 'se' : 'nw'}
 
+
+class ProtoSquare:
+    def __init__(self, point, orientation) -> None:
+        self.point = point
+        self.orientation = orientation
 
 class Square:
     def __init__(self, point, orientation, size) -> None:
@@ -25,7 +29,6 @@ class Square:
         else:
             self.edge_right = point.x
             self.edge_left = point.x - size
-
 
     def __str__(self) -> str:
         return f"({self.point}, '{self.orientation}')"
@@ -68,3 +71,7 @@ class Square:
             [self.edge_left, self.edge_right, self.edge_right, self.edge_left, self.edge_left],
             [self.edge_down, self.edge_down, self.edge_up, self.edge_up, self.edge_down],
         )
+
+    @staticmethod
+    def from_proto(proto_square, size):
+        return Square(proto_square.point, proto_square.orientation, size)

@@ -1,19 +1,56 @@
+import random
+
 from searches.search import Search
+from geometry.square import ORIENTATIONS, ProtoSquare, Square
 
 class Individual:
-    def __init__(self, map) -> None:
+    def __init__(self, map, mutation_prob) -> None:
         self.map = map
+        self.mutation_prob = mutation_prob
+
+        self.sizes = map.square_size_candidates
+        self.size = random.choice(self.sizes)
+        self.proto_squares = [ProtoSquare(p, random.choice(ORIENTATIONS)) for p in self.map.points]
+        self.squares = []
+        self._generate_squares()
+
         self.fitness = 0
         self.calculate_fitness()
 
     def __lt__(self, other):
         return self.fitness < other.fitness
 
+    def _generate_squares(self):
+        self.squares = [Square(psq, self.size) for psq in self.proto_squares]
+
     def calculate_fitness(self):
         pass
 
+    def _mutate_size(self):
+        if self.mutation_prob < random.random():
+            return False
+
+        size_index = self.sizes.index(self.size)
+
+        if random.random() < 0.5:
+            self.size = self.squares[min(size_index + 1, len(self.squares) - 1)]
+        else:
+            self.size = self.squares[max(size_index - 1, 0)]
+
+        return True
+
+    def _mutate_squares(self):
+        for i in range(self.proto_squares):
+            if random.random() < self.mutation_prob:
+                self.proto_squares[i].orientation = random.choice(ORIENTATIONS) # TODO Check if same orientation
+                self.squares[i] = Square.from_proto(self.proto_squares[i], self.size)
+
     def mutate(self):
-        pass
+        self._mutate_squares()
+        if self._mutate_size():
+            self._generate_squares()
+
+        self.calculate_fitness()
 
 
 class Genetic(Search):
@@ -60,4 +97,4 @@ class Genetic(Search):
 
                 population = new_population # TODO Copy this
 
-        return max(population) # TODO Return square placing
+        return max(population).squares
