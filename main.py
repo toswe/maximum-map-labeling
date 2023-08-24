@@ -48,7 +48,7 @@ def main(num_of_points, map_size, seed):
     ]
 
     for algorithm in search_algorithms:
-        search = algorithm(the_map.points)
+        search = algorithm(the_map)
         squares = search.binary_search(square_size_candidates)
 
         print("Optimal size: {:.2f}".format(squares[0].size))

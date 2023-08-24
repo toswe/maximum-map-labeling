@@ -1,6 +1,7 @@
 class Search:
-    def __init__(self, points) -> None:
-        self.points = points
+    def __init__(self, map) -> None:
+        self.map = map
+        self.points = map.points
 
     def search(self, square_size):
         """
