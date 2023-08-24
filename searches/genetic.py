@@ -24,7 +24,9 @@ class Individual:
         self.squares = [Square(psq, self.size) for psq in self.proto_squares]
 
     def calculate_fitness(self):
-        pass
+        if Square.check_overlap(self.squares):
+            return 0
+        return self.size
 
     def _mutate_size(self):
         if self.mutation_prob < random.random():

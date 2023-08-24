@@ -16,10 +16,8 @@ class BruteForce(OptimalSearch):
 
         """
         squares = [Square(p, o, square_size) for (p, o) in zip(self.points, square_orientations)]
-
-        for first, second in itertools.combinations(squares, 2):
-            if first.has_overlap(second):
-                return False
+        if Square.check_overlap(squares):
+            return False
         return squares
 
 

@@ -1,3 +1,5 @@
+import itertools
+
 ORIENTATIONS = {'ne', 'nw', 'sw', 'se'}
 OPPOSITE_ORIENTATIONS = {'ne' : 'sw', 'nw' : 'se', 'sw' : 'ne', 'se' : 'nw'}
 
@@ -75,3 +77,10 @@ class Square:
     @staticmethod
     def from_proto(proto_square, size):
         return Square(proto_square.point, proto_square.orientation, size)
+
+    @staticmethod
+    def check_overlap(squares):
+        for first, second in itertools.combinations(squares, 2):
+            if first.has_overlap(second):
+                return True
+        return False
