@@ -6,6 +6,7 @@ from point import Point
 
 
 def _get_initial_limits():
+    # TODO Refactor this to use orientations from Square
     return {
         'ne' : math.inf,
         'nw' : math.inf,
@@ -15,23 +16,21 @@ def _get_initial_limits():
 
 
 class Map:
-    def __init__(self, num_of_points, map_size, seed):
+    def __init__(self, num_of_points, size, seed):
         random.seed(seed)
-        self.seed = seed
 
+        self.seed = seed
         self.num_of_points = num_of_points
-        self.map_size = map_size
+        self.size = size
+
         # Points is a dict where keys are points, and values are point limits in each direction
         self.points = dict()
-
         self._generate_points()
 
         self.square_size_candidates = self._get_possible_square_sizes()
 
-
     def get_points(self):
         return list(self.points.keys())
-
 
     def _update_point_limits(self):
         for point1, point2 in itertools.combinations(self.get_points(), 2):
@@ -59,7 +58,6 @@ class Map:
                     self.points[point1]['sw'] = min(self.points[point1]['sw'], distance)
                     self.points[point2]['ne'] = min(self.points[point2]['ne'], distance)
 
-
     def _generate_points(self):
         """
         A function that generates random points with their coordinates and limits
@@ -68,13 +66,12 @@ class Map:
         """
 
         while len(self.points) < self.num_of_points:
-            point = Point(random.uniform(0, self.map_size), random.uniform(0, self.map_size))
+            point = Point(random.uniform(0, self.size), random.uniform(0, self.size))
             self.points[point] = _get_initial_limits()
 
         self._update_point_limits()
 
         return list(self.points)
-
 
     def _get_possible_square_sizes(self):
         """

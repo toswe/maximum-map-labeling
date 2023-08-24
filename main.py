@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 
 from map import Map
 from searches.brute_force import BruteForce
+from searches.brute_force_cache import BruteForceCache
 from searches.b import B
 
 MAP_SIZE = 100.0
@@ -26,7 +27,8 @@ def main(num_of_points, map_size, seed):
     print()
 
     search_algorithms = [
-        BruteForce,
+        # BruteForce,
+        BruteForceCache,
         B,
     ]
 
