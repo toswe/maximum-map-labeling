@@ -1,6 +1,6 @@
 import itertools
 
-ORIENTATIONS = {'ne', 'nw', 'sw', 'se'}
+ORIENTATIONS = ['ne', 'nw', 'sw', 'se']
 OPPOSITE_ORIENTATIONS = {'ne' : 'sw', 'nw' : 'se', 'sw' : 'ne', 'se' : 'nw'}
 
 

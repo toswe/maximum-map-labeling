@@ -10,7 +10,7 @@ class Individual:
         self.mutation_prob = mutation_prob
 
         self.sizes = map.square_size_candidates
-        self.size = random.choice(self.sizes)
+        self.size = self.sizes[0]
         self.proto_squares = [ProtoSquare(p, random.choice(ORIENTATIONS)) for p in self.map.points]
         self.squares = []
         self._generate_squares()
@@ -22,12 +22,12 @@ class Individual:
         return self.fitness < other.fitness
 
     def _generate_squares(self):
-        self.squares = [Square(psq, self.size) for psq in self.proto_squares]
+        self.squares = [Square.from_proto(psq, self.size) for psq in self.proto_squares]
 
     def _calculate_fitness(self):
         if Square.check_overlap(self.squares):
-            return 0
-        return self.size
+            self.fitness = -self.size
+        self.fitness = self.size
 
     def _mutate_size(self):
         if self.mutation_prob < random.random():
@@ -35,15 +35,15 @@ class Individual:
 
         size_index = self.sizes.index(self.size)
 
-        if random.random() < 0.5:
-            self.size = self.squares[min(size_index + 1, len(self.squares) - 1)]
+        if random.random() < 0.75:
+            self.size = self.sizes[min(size_index + random.randrange(1, 4), len(self.squares) - 1)]
         else:
-            self.size = self.squares[max(size_index - 1, 0)]
+            self.size = self.sizes[max(size_index - 1, 0)]
 
         return True
 
     def _mutate_squares(self):
-        for i in range(self.proto_squares):
+        for i in range(len(self.proto_squares)):
             if random.random() < self.mutation_prob:
                 self.proto_squares[i].orientation = random.choice(ORIENTATIONS) # TODO Check if same orientation
                 self.squares[i] = Square.from_proto(self.proto_squares[i], self.size)
@@ -76,8 +76,8 @@ class Genetic(Search):
     def __init__(
             self,
             map,
-            iterations=1000,
-            population_size=100,
+            iterations=100,
+            population_size=10,
             elitism_size=0.2,
             tournament_size=0.05,
             mutation_prob=0.02,
@@ -86,16 +86,16 @@ class Genetic(Search):
 
         self.iterations = iterations
         self.population_size = population_size
-        self.elitism_size = int(population_size * elitism_size)
-        self.tournament_size = int(population_size * tournament_size)
+        self.elitism_size = max(int(population_size * elitism_size), 2)
+        self.tournament_size = max(int(population_size * tournament_size), 2)
         self.mutation_prob = mutation_prob
 
     def _selection(self, population):
         return max(random.sample(population, self.tournament_size))
 
     def search(self):
-        population = [Individual(self.map) for _ in range(self.population_size)]
-        new_population = [Individual(self.map) for _ in range(self.population_size)]
+        population = [Individual(self.map, self.mutation_prob) for _ in range(self.population_size)]
+        new_population = [Individual(self.map, self.mutation_prob) for _ in range(self.population_size)]
 
         for _ in range(self.iterations):
             population.sort()
