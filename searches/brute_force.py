@@ -22,7 +22,7 @@ class BruteForce(Search):
         return squares
 
 
-    def search(self, square_size):
+    def _search_size(self, square_size):
         """
         A simple algorithm that goes through all the possible combinations
         of square orientations for the points and checks if they're valid.

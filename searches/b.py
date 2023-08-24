@@ -136,7 +136,7 @@ class B(Search):
     def _phase_3(self, size):
         pass
 
-    def search(self, square_size):
+    def _search_size(self, square_size):
 
         self._phase_3(square_size)
 

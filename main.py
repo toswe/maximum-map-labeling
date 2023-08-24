@@ -34,7 +34,7 @@ def main(num_of_points, map_size, seed):
 
     for algorithm in search_algorithms:
         search = algorithm(the_map)
-        squares = search.binary_search()
+        squares = search.search()
 
         print("Optimal size: {:.2f}".format(squares[0].size))
         print(f"Largest area: {int(squares[0].size ** 2) * len(points)}")

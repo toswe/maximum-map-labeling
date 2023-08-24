@@ -30,11 +30,11 @@ class BruteForceCache(BruteForce):
     def _check_solution(self):
         return os.path.isfile(self._generate_cache_name())
 
-    def binary_search(self):
+    def search(self):
         if self._check_solution():
             return self._load_solution()
 
-        best_placing = super().binary_search()
+        best_placing = super().search()
 
         self._store_solution(best_placing)
 
