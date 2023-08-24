@@ -1,11 +1,11 @@
 import itertools
 import random
 
-from searches.search import Search
+from searches.optimal_search import OptimalSearch
 from square import Square, ORIENTATIONS
 
 
-class B(Search):
+class B(OptimalSearch):
     def get_conflicts(squares):
         conflicts = dict()
         for sq1, sq2  in itertools.combinations(squares , 2):

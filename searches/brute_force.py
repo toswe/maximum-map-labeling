@@ -1,9 +1,9 @@
 import itertools
 
-from searches.search import Search
+from searches.optimal_search import OptimalSearch
 from square import Square, ORIENTATIONS
 
-class BruteForce(Search):
+class BruteForce(OptimalSearch):
     def _test_placings(self, square_orientations, square_size):
         """
         For the given square size, test if the given placings are valid.

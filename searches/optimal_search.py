@@ -1,4 +1,4 @@
-class Search:
+class OptimalSearch:
     def __init__(self, map) -> None:
         self.map = map
         self.points = map.points
