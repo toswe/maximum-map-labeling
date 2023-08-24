@@ -1,8 +1,6 @@
-class OptimalSearch:
-    def __init__(self, map) -> None:
-        self.map = map
-        self.points = map.points
+from searches.search import Search
 
+class OptimalSearch(Search):
     def _search_size(self, square_size):
         """
         Args:
