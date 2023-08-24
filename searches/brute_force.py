@@ -1,7 +1,7 @@
 import itertools
 
 from searches.optimal_search import OptimalSearch
-from square import Square, ORIENTATIONS
+from geometry.square import Square, ORIENTATIONS
 
 class BruteForce(OptimalSearch):
     def _test_placings(self, square_orientations, square_size):

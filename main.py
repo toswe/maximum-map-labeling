@@ -2,7 +2,7 @@ import argparse
 
 from matplotlib import pyplot as plt
 
-from map import Map
+from geometry.map import Map
 from searches.brute_force import BruteForce
 from searches.brute_force_cache import BruteForceCache
 from searches.b import B

@@ -2,7 +2,7 @@ import itertools
 import random
 
 from searches.optimal_search import OptimalSearch
-from square import Square, ORIENTATIONS
+from geometry.square import Square, ORIENTATIONS
 
 
 class B(OptimalSearch):

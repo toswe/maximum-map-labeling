@@ -2,7 +2,7 @@ import random
 import itertools
 import math
 
-from point import Point
+from geometry.point import Point
 
 
 def _get_initial_limits():
