@@ -17,6 +17,7 @@ def _get_initial_limits():
 class Map:
     def __init__(self, num_of_points, map_size, seed):
         random.seed(seed)
+        self.seed = seed
 
         self.num_of_points = num_of_points
         self.map_size = map_size
@@ -25,7 +26,7 @@ class Map:
 
         self._generate_points()
 
-        self.square_size_candidates = self.get_possible_square_sizes()
+        self.square_size_candidates = self._get_possible_square_sizes()
 
 
     def get_points(self):
@@ -75,7 +76,7 @@ class Map:
         return list(self.points)
 
 
-    def get_possible_square_sizes(self):
+    def _get_possible_square_sizes(self):
         """
         A function that finds all the possible sizes of squares.
         Args:
