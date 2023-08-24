@@ -23,8 +23,9 @@ class Map:
         # Points is a dict where keys are points, and values are point limits in each direction
         self.points = dict()
 
-
         self._generate_points()
+
+        self.square_size_candidates = self.get_possible_square_sizes()
 
 
     def get_points(self):

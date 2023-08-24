@@ -29,10 +29,8 @@ def main(num_of_points, map_size, seed):
     # Thus there are a limited number of possible square sizes
     # that can possibly be optimal.
 
-    square_size_candidates = the_map.get_possible_square_sizes()
-
     print('Possible square size candidates:')
-    print(len(square_size_candidates), square_size_candidates)
+    print(len(the_map.square_size_candidates), the_map.square_size_candidates)
     print()
 
     # We can then do a binary search through those
@@ -49,7 +47,7 @@ def main(num_of_points, map_size, seed):
 
     for algorithm in search_algorithms:
         search = algorithm(the_map)
-        squares = search.binary_search(square_size_candidates)
+        squares = search.binary_search()
 
         print("Optimal size: {:.2f}".format(squares[0].size))
         print(f"Largest area: {int(squares[0].size ** 2) * len(points)}")

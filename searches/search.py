@@ -15,15 +15,13 @@ class Search:
         """
         raise Exception("Not implemented.")
 
-    def binary_search(self, squre_sizes):
+    def binary_search(self):
         """
-        Args:
-            squre_sizes - a list of possible sqare sizes (list(float))
-
         Returns:
             best_placing - list( Square )
-
         """
+        squre_sizes = self.map.square_size_candidates
+
         l_bound = 0
         u_bound = len(squre_sizes) - 1
 
