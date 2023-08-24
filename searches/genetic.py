@@ -91,16 +91,16 @@ class Genetic(Search):
         self.mutation_prob = mutation_prob
 
     def _selection(self, population):
-        return population[0] # TODO
+        return max(random.sample(population, self.tournament_size))
 
     def search(self):
         population = [Individual(self.map) for _ in range(self.population_size)]
         new_population = [Individual(self.map) for _ in range(self.population_size)]
 
         for _ in range(self.iterations):
-            population.sort() # TODO Maybe reverse
+            population.sort()
 
-            new_population[:self.elitism_size] = population[:self.elitism_size]
+            new_population[:self.elitism_size] = deepcopy(population[:self.elitism_size])
 
             for i in range(self.elitism_size, self.population_size, 2):
                 child1, child2 = new_population[i], new_population[i+1]
@@ -108,9 +108,9 @@ class Genetic(Search):
 
                 Individual.crossover(parent1, parent2, child1, child2)
 
-                child1.mutate()
+                child1.mutate() # Maybe move to crossover, because of optimisation
                 child2.mutate()
 
-            population = new_population # TODO Copy this
+            population, new_population = new_population, population
 
         return max(population).squares
