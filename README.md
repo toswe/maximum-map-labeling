@@ -18,3 +18,4 @@ https://www.ac.tuwien.ac.at/wp/wp-content/uploads/Martin-N%C3%B6llenburg-dynlab.
 
 Sever je pozitivno y.
 Istok je pozitivno x.
+pip install python-constraint

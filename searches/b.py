@@ -1,12 +1,20 @@
 import itertools
 import random
 
+import constraint
+
 from searches.optimal_search import OptimalSearch
 from geometry.square import Square, ORIENTATIONS
 
 
 class B(OptimalSearch):
-    def get_conflicts(squares):
+    def __init__(self, map) -> None:
+        super().__init__(map)
+        self.size = None
+        self.conflicts = None
+        self.non_conflicts = None
+
+    def get_conflicts(self, squares):
         conflicts = dict()
         for sq1, sq2  in itertools.combinations(squares , 2):
             if sq1.has_overlap(sq2):
@@ -16,35 +24,21 @@ class B(OptimalSearch):
                     conflicts[sq2] = []
                 conflicts[sq1].append(sq2)
                 conflicts[sq2].append(sq1)
-        return conflicts
+        self.conflicts = conflicts
     
-    def get_non_conflicts(self, conflicts):
+    def get_non_conflicts(self):
         non_conflicts = dict()
         for point in self.points:
             for square in point.squares:
-                if square not in conflicts:
+                if square not in self.conflicts:
                     if point not in non_conflicts:
                         non_conflicts[point] = []
                     non_conflicts[point].append(square)
-        return non_conflicts
-    
-    def _phase_1(self, size):
+        self.non_conflicts = non_conflicts
+
+    def _phase_1(self):
         for point in self.points:
-            point.squares = [Square(point, orientation, size) for orientation in ORIENTATIONS]
-
-        # for point1, point2 in itertools.combinations(self.points, 2):
-        #     for square in point1.squares:
-        #         if square.has_point(point2):
-        #             # TODO : don't creat an object here
-        #             sq = Square(point2, square.get_opposite_orientation(), size)
-        #             if sq in point2.squares:
-        #                 point2.squares.remove(sq)
-
-        # for point1, point2 in itertools.combinations(self.points, 2):
-        #     for square in point1.squares:
-        #         if square.has_point(point2):
-        #             point1.squares.remove(square)
-        
+            point.squares = [Square(point, orientation, self.size) for orientation in ORIENTATIONS]        
         for point1 in self.points:
             for point2 in self.points:
                 for square in point1.squares:
@@ -54,30 +48,35 @@ class B(OptimalSearch):
         square_list = []
         for point in self.points:
             square_list = square_list + point.squares
-        conflicts = B.get_conflicts(square_list)
-        return conflicts, self.get_non_conflicts(conflicts)
+        self.get_conflicts(square_list)
+        self.get_non_conflicts()
     
-    def remove_candidat(self, candidat, conflicts, non_conflicts):
-        if candidat in conflicts:
-            if conflicts[candidat]:
-                for square in conflicts[candidat]:
-                    conflicts[square].remove(candidat)
-                    if not conflicts[square]:
-                        del conflicts[square]
-            del conflicts[candidat]
-        if candidat.point in non_conflicts:
-            if candidat in non_conflicts[candidat.point]:
-                non_conflicts[candidat.point].remove(candidat)
-            if not non_conflicts[candidat.point]:
-                del non_conflicts[candidat.point]
+    def remove_candidat(self, candidat):
+        if candidat in self.conflicts:
+            if self.conflicts[candidat]:
+                for square in self.conflicts[candidat]:
+                    self.conflicts[square].remove(candidat)
+                    if not self.conflicts[square]:
+                        del self.conflicts[square]
+            del self.conflicts[candidat]
+        if candidat.point in self.non_conflicts:
+            if candidat in self.non_conflicts[candidat.point]:
+                self.non_conflicts[candidat.point].remove(candidat)
+            if not self.non_conflicts[candidat.point]:
+                del self.non_conflicts[candidat.point]
         for point in self.points:
             if point == candidat.point:
                 point.squares.remove(candidat)
                 break
-        return conflicts, non_conflicts
-            
-    def _phase_2(self, size):
-        conflicts, non_conflicts = self._phase_1(size)
+        self.get_non_conflicts()
+
+    def posible(self):
+        for point in self.points:
+            if not point.squares:
+                return False
+        return True
+
+    def _phase_2(self):
         stack = []
         for p in self.points:
             stack.append(p)
@@ -85,115 +84,131 @@ class B(OptimalSearch):
             for point in stack:
                 candidat_remove = []
                 if len(point.squares) == 0:
-                    return {}, {}
-                elif point in non_conflicts:
-                    if non_conflicts[point]:
-                        chosen_square = random.choice(non_conflicts[point])
+                    return False
+                elif point in self.non_conflicts:
+                    if self.non_conflicts[point]:
+                        chosen_square = random.choice(self.non_conflicts[point])
                         for square in point.squares:
                             if square != chosen_square:
                                 candidat_remove.append(square)
-                        non_conflicts[point] = [chosen_square]
+                        self.non_conflicts[point] = [chosen_square]
                         stack_remove.append(point)
                 elif len(point.squares) == 1:
-                    if point.squares[0] in conflicts:
-                        for square in conflicts[point.squares[0]]:
+                    if point.squares[0] in self.conflicts:
+                        for square in self.conflicts[point.squares[0]]:
                             candidat_remove.append(square)
-                        if point not in non_conflicts:
-                            non_conflicts[point] = []
-                        non_conflicts[point].append(point.squares[0])
+                        if point not in self.non_conflicts:
+                            self.non_conflicts[point] = []
+                        self.non_conflicts[point].append(point.squares[0])
                 else:
                     for square in point.squares:
-                        if square in conflicts:
-                            for sq1, sq2 in itertools.combinations(conflicts[square], 2):
+                        if square in self.conflicts:
+                            for sq1, sq2 in itertools.combinations(self.conflicts[square], 2):
                                 if sq1.point == sq2.point and len(sq1.point.squares) == 2:
                                     candidat_remove.append(square)
                                     break
                 if candidat_remove:
                     for candidat in candidat_remove:
-                        conflicts, non_conflicts = self.remove_candidat(candidat, conflicts, non_conflicts)
-                    non_conflicts = self.get_non_conflicts(conflicts)
+                        self.remove_candidat(candidat)
             if stack_remove:
                 for remove in stack_remove:
                     stack.remove(remove)
-        for point in self.points:
-            if not point.squares:
-                return {}, {}
-        # print(f"----{size}---")
-        # print(f"conflicts: {conflicts}")
-        # print(f"non_conflicts: {non_conflicts}")
-        # for point in self.points:
-        #     print(f"    tacka {point} ima sledece kandidate: {point.squares}")
-        # square_orientation = [point.squares[0] for point in self.points]
-        return conflicts, non_conflicts
+        if not self.posible:
+            return False
+        return True
 
-    def is_solution(self):
-        for point in self.points:
-            if not point.squares:
+    def overlap(self, x, y):
+        for key, value in x.items():
+            x_sq = key
+            x_t = value
+        for key, value in y.items():
+            y_sq = key
+            y_t = value
+        if x_t and y_t:
+            if y_sq in self.conflicts[x_sq]:
                 return False
         return True
-    
-    def sat_combinations(self,conflicts, sat):
-        print(conflicts)
-        for sq1, sq2 in itertools.combinations(sat.keys(), 2):
-            if sq1.point == sq2.point:
-                sat[sq2] = not sat[sq1]
-            if sq2 in conflicts[sq1]:
-                if sat[sq1] == True:
-                    sat[sq2] = False
-        for candidat in conflicts:
-            for square in conflicts[candidat]:
-                if sat[candidat] == sat[square] == True:
-                    print(f"sat_comb False: {candidat} {sat[candidat]} je isti kao {square} {sat[square]}")
-                    return False
-        for sq1, sq2 in itertools.combinations(sat.keys(), 2):
-            if sq1.point == sq2.point:
-                if sat[sq1] == sat[sq2] == False:
-                    print(f"sat_comb False: {sq1} {sat[sq1]} i {sq2} {sat[sq2]}")
-                    return False
 
-    def two_sat(self, conflicts, non_conflicts):
-        sat = {}
-        for key in conflicts.keys():
-            sat[key] = True
-        if not self.sat_combinations(conflicts, sat):
-            for key in sat.keys():
-                sat[key] = False
-        return self.sat_combinations(conflicts,sat)
+    def count_true(solution):
+        if solution:
+            values = []
+            for value in solution.values():
+                if value.values():
+                    tmp = list(value.values())
+                    values = values + tmp 
+            return sum(1 for value in values if value)
+        else:
+            return 0
 
-    def _phase_3(self, size):
-        print(f"----------{size}-------------")
-        for i in range(0,3):
-            conflicts, non_conflicts = self._phase_2(size)
-            if (not non_conflicts) and (not conflicts):
-                    return False
-            for point in self.points:
-                max_conf = 0
-                max_sq = point.squares[0]
-                if len(point.squares) == 4 - i:
-                    for square in point.squares:
-                        if square in conflicts:
-                            if len(conflicts[square]) > max_conf:
-                                max_conf = len(conflicts[square])
-                                max_sq = square
-                    conflicts, non_conflicts = self.remove_candidat(max_sq, conflicts, non_conflicts)
-                    non_conflicts = self.get_non_conflicts(conflicts)
+    def solution_to_dict(solution):
+        if solution:
+            keys = []
+            values = []
+            for key in solution.values():
+                keys = keys + list(key.keys())
+            for value in solution.values():
+                values = values + list(value.values())
+            return dict(zip(keys, values))
+        else: 
+            return None
 
-        for point in self.points:
-            print(f"{point} ima {len(point.squares)} kandidata")
-        sat_rez = True
-        if conflicts:
-            print(f"if conflicts : {conflicts}")
-            return False
-            # sat_rez =  self.two_sat(conflicts, non_conflicts)
-            # print(f"faza3 sat vraca{sat_rez}")
-        # if not sat_rez:
-        #     return False
-        
-        if self.is_solution():
-            return [point.squares[0] for point in self.points]
+    def satisfiable(solution):
+        points = set([square.point for square in solution.keys()])
+        points_true = set([square.point for square, value in solution.items() if value])
+        if points == points_true:
+            return True
         else:
             return False
 
+    def two_sat(self):
+        if not self.conflicts:
+            return True
+        problem = constraint.Problem()
+        str_conf = []
+        for square in self.conflicts.keys():
+            str_conf.append(str(square))
+            problem.addVariable(str(square), [{square: True},{square: False}])
+        for str1,str2 in itertools.combinations(str_conf,2):
+            problem.addConstraint(self.overlap, (str1,str2))
+
+        solutions = problem.getSolutions()
+        if not solutions:
+            return False    
+        max_true = max(solutions, key=B.count_true)
+        max_count = B.count_true(max_true)
+        best_solutions = [solution for solution in solutions if B.count_true(solution) == max_count]
+        finals = []
+        for solution in best_solutions:
+            finals.append(B.solution_to_dict(solution))
+        for solution in finals:
+            if B.satisfiable(solution):
+                for key, value in solution.items():
+                    if not value:
+                        self.remove_candidat(key)
+                return True
+        return False
+
+    def _phase_3(self):
+        self._phase_1()
+        for i in range(0,2):
+            for point in self.points:
+                max_conf = 0
+                max_sq = point.squares[0]
+                if len(point.squares) == 4 - i + 1:
+                    for square in point.squares:
+                        if square in self.conflicts:
+                            if len(self.conflicts[square]) > max_conf:
+                                max_conf = len(self.conflicts[square])
+                                max_sq = square
+                    self.remove_candidat(max_sq)
+            if not self._phase_2():
+                    return False
+        if self.two_sat():
+            if self.posible():
+                return [point.squares[0] for point in self.points]
+        return False
+
 
     def _search_size(self, square_size):
-        return self._phase_3(square_size)
+        self.size = square_size
+        return self._phase_3()
