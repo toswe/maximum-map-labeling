@@ -192,6 +192,8 @@ class B(OptimalSearch):
         self._phase_1()
         for i in range(0,2):
             for point in self.points:
+                if not point.squares:
+                    return False
                 max_conf = 0
                 max_sq = point.squares[0]
                 if len(point.squares) == 4 - i + 1:
