@@ -25,9 +25,9 @@ class Individual:
         self.squares = [Square.from_proto(psq, self.size) for psq in self.proto_squares]
 
     def _calculate_fitness(self):
-        if Square.check_overlap(self.squares):
-            self.fitness = -self.size
         self.fitness = self.size
+        if Square.check_overlap(self.squares):
+            self.fitness *= -1
 
     def _mutate_size(self):
         if self.mutation_prob < random.random():
@@ -71,6 +71,9 @@ class Individual:
         child1._update(proto_squares_1, parent1.size)
         child2._update(proto_squares_2, parent2.size)
 
+    def __repr__(self) -> str:
+        return str(self.fitness)
+
 
 class Genetic(Search):
     def __init__(
@@ -98,8 +101,7 @@ class Genetic(Search):
         new_population = [Individual(self.map, self.mutation_prob) for _ in range(self.population_size)]
 
         for _ in range(self.iterations):
-            population.sort()
-
+            population.sort(reverse=True)
             new_population[:self.elitism_size] = deepcopy(population[:self.elitism_size])
 
             for i in range(self.elitism_size, self.population_size, 2):
