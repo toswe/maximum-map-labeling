@@ -10,7 +10,8 @@ class Individual:
         self.mutation_prob = mutation_prob
 
         self.sizes = map.square_size_candidates
-        self.size = self.sizes[0]
+        # self.size = self.sizes[0]
+        self.size = random.choice(self.sizes)
         self.proto_squares = [ProtoSquare(p, random.choice(ORIENTATIONS)) for p in self.map.points]
         self.squares = []
         self._generate_squares()
@@ -36,7 +37,7 @@ class Individual:
         size_index = self.sizes.index(self.size)
 
         if random.random() < 0.75:
-            self.size = self.sizes[min(size_index + random.randrange(1, 4), len(self.squares) - 1)]
+            self.size = self.sizes[min(size_index, len(self.squares) - 1)]
         else:
             self.size = self.sizes[max(size_index - 1, 0)]
 
