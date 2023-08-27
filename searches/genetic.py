@@ -52,9 +52,12 @@ class Individual:
 
         self.fitness = self.size * (len(self.squares) - overlaps * 2)
 
+    def _should_mutate(self):
+        return self.mutation_prob > random.random()
+
     def _mutate_size(self):
-        if self.mutation_prob < random.random():
-            return False
+        if not self._should_mutate():
+            return
 
         size_index = self.sizes.index(self.size)
 
@@ -63,25 +66,19 @@ class Individual:
         else:
             self.size = self.sizes[max(size_index - 1, 0)]
 
-        return True
-
-    def _mutate_squares(self):
+    def _mutate_proto_squares(self):
         for i in range(len(self.proto_squares)):
-            if random.random() < self.mutation_prob:
+            if self._should_mutate():
                 self.proto_squares[i].orientation = random.choice(ORIENTATIONS) # TODO Check if same orientation
-                self.squares[i] = Square.from_proto(self.proto_squares[i], self.size)
 
-    def mutate(self):
-        self._mutate_squares()
-        if self._mutate_size():
-            self._generate_squares()
-
-        self._calculate_fitness()
-
-    def _update(self, proto_squares, size):
+    def _update_and_mutate(self, proto_squares, size):
         self.proto_squares = deepcopy(proto_squares)
         self.size = size
+
+        self._mutate_proto_squares()
+        self._mutate_size()
         self._generate_squares()
+
         self._calculate_fitness()
 
     @staticmethod
@@ -91,8 +88,8 @@ class Individual:
         proto_squares_1 = parent1.proto_squares[:split_index] + parent2.proto_squares[split_index:]
         proto_squares_2 = parent2.proto_squares[:split_index] + parent1.proto_squares[split_index:]
 
-        child1._update(proto_squares_1, parent1.size)
-        child2._update(proto_squares_2, parent2.size)
+        child1._update_and_mutate(proto_squares_1, parent1.size)
+        child2._update_and_mutate(proto_squares_2, parent2.size)
 
 
 class Genetic(Search):
@@ -129,9 +126,6 @@ class Genetic(Search):
                 parent1, parent2 = self._selection(population), self._selection(population)
 
                 Individual.crossover(parent1, parent2, child1, child2)
-
-                child1.mutate() # Maybe move to crossover, because of optimisation
-                child2.mutate()
 
             population, new_population = new_population, population
 
