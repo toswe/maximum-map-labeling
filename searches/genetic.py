@@ -135,4 +135,4 @@ class Genetic(Search):
 
             population, new_population = new_population, population
 
-        return max(population).squares
+        return max(p for p in population if not p.has_overlaps).squares
