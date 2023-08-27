@@ -1,6 +1,8 @@
 import random
 from copy import deepcopy
 
+import itertools
+
 from searches.search import Search
 from geometry.square import ORIENTATIONS, ProtoSquare, Square
 
@@ -16,19 +18,39 @@ class Individual:
         self.squares = []
         self._generate_squares()
 
+        self.max_overlaps = 3 # TODO Extract this
         self.fitness = 0
+        self.has_overlaps = False
         self._calculate_fitness()
 
     def __lt__(self, other):
         return self.fitness < other.fitness
 
+    def __repr__(self) -> str:
+        return str(self.fitness)
+
     def _generate_squares(self):
         self.squares = [Square.from_proto(psq, self.size) for psq in self.proto_squares]
 
-    def _calculate_fitness(self):
+    def _calculate_fitness_old(self):
         self.fitness = self.size
         if Square.check_overlap(self.squares):
             self.fitness *= -1
+
+    def _calculate_fitness(self):
+        self.has_overlaps = False
+        overlaps = 0
+
+        for first, second in itertools.combinations(self.squares, 2):
+            if first.has_overlap(second):
+                self.has_overlaps = True
+                overlaps += 1
+
+            if overlaps > self.max_overlaps:
+                self.fitness = -1 * self.size
+                return
+
+        self.fitness = self.size * (len(self.squares) - overlaps * 2)
 
     def _mutate_size(self):
         if self.mutation_prob < random.random():
@@ -37,7 +59,7 @@ class Individual:
         size_index = self.sizes.index(self.size)
 
         if random.random() < 0.75:
-            self.size = self.sizes[min(size_index, len(self.squares) - 1)]
+            self.size = self.sizes[min(size_index + 1, len(self.squares) - 1)]
         else:
             self.size = self.sizes[max(size_index - 1, 0)]
 
@@ -72,16 +94,13 @@ class Individual:
         child1._update(proto_squares_1, parent1.size)
         child2._update(proto_squares_2, parent2.size)
 
-    def __repr__(self) -> str:
-        return str(self.fitness)
-
 
 class Genetic(Search):
     def __init__(
             self,
             map,
             iterations=100,
-            population_size=10,
+            population_size=100,
             elitism_size=0.2,
             tournament_size=0.05,
             mutation_prob=0.02,
