@@ -55,16 +55,22 @@ class Individual:
     def _should_mutate(self):
         return self.mutation_prob > random.random()
 
+    def _grow_size(self):
+        size_index = self.sizes.index(self.size)
+        self.size = self.sizes[min(size_index + 1, len(self.squares) - 1)]
+
+    def _shrink_size(self):
+        size_index = self.sizes.index(self.size)
+        self.size = self.sizes[max(size_index - 1, 0)]
+
     def _mutate_size(self):
         if not self._should_mutate():
             return
 
-        size_index = self.sizes.index(self.size)
-
         if random.random() < 0.75:
-            self.size = self.sizes[min(size_index + 1, len(self.squares) - 1)]
+            self._grow_size()
         else:
-            self.size = self.sizes[max(size_index - 1, 0)]
+            self._shrink_size()
 
     def _mutate_proto_squares(self):
         for i in range(len(self.proto_squares)):
