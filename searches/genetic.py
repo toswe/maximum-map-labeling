@@ -2,6 +2,7 @@ import random
 from copy import deepcopy
 
 import itertools
+import matplotlib.pyplot as plt
 
 from searches.search import Search
 from geometry.square import ORIENTATIONS, ProtoSquare, Square
@@ -102,7 +103,7 @@ class Genetic(Search):
     def __init__(
             self,
             map,
-            iterations=100,
+            iterations=10,
             population_size=100,
             elitism_size=0.2,
             tournament_size=0.05,
@@ -123,9 +124,12 @@ class Genetic(Search):
         population = [Individual(self.map, self.mutation_prob) for _ in range(self.population_size)]
         new_population = [Individual(self.map, self.mutation_prob) for _ in range(self.population_size)]
 
+        fitnesses = []
         for _ in range(self.iterations):
             population.sort(reverse=True)
             new_population[:self.elitism_size] = deepcopy(population[:self.elitism_size])
+
+            fitnesses.append(population[0].fitness)
 
             for i in range(self.elitism_size, self.population_size, 2):
                 child1, child2 = new_population[i], new_population[i+1]
@@ -134,5 +138,8 @@ class Genetic(Search):
                 Individual.crossover(parent1, parent2, child1, child2)
 
             population, new_population = new_population, population
+
+        # subplot = plt.figure().add_subplot()
+        # subplot.plot(fitnesses)
 
         return max(p for p in population if not p.has_overlaps).squares
