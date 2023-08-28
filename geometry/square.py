@@ -38,31 +38,38 @@ class Square:
     def __repr__(self):
         return self.__str__()
 
-    def __eq__(self, square):
-        if isinstance(square, Square):
-            return self.point == square.point and self.orientation == square.orientation and self.size == square.size
-        return False
-
     def __hash__(self):
         return hash((self.point, self.orientation, self.size))
 
+    def __eq__(self, square):
+        return (
+                isinstance(square, Square)
+            and self.point == square.point
+            and self.orientation == square.orientation
+            and self.size == square.size
+        )
+
     def has_overlap(self, square):
-        if (
+        return (
                 self.edge_left  < square.edge_right
             and self.edge_right > square.edge_left
             and self.edge_up    > square.edge_down
             and self.edge_down  < square.edge_up
-        ):
-            return True
-        return False
+        )
 
     def has_point(self, point):
-        if (
+        return (
                 self.edge_down < point.y < self.edge_up
-                and self.edge_left < point.x < self.edge_right
-        ):
-            return True
-        return False
+            and self.edge_left < point.x < self.edge_right
+        )
+
+    def touches(self, square):
+        return (
+                self.edge_left  == square.edge_right
+            or 	self.edge_right == square.edge_left
+            or 	self.edge_up    == square.edge_down
+            or 	self.edge_down  == square.edge_up
+        )
 
     def get_opposite_orientation(self):
         return OPPOSITE_ORIENTATIONS[self.orientation]
