@@ -89,7 +89,7 @@ class Individual:
         self._calculate_fitness()
 
     @staticmethod
-    def crossover(parent1, parent2, child1, child2):
+    def crossover_1_position(parent1, parent2, child1, child2):
         split_index = random.randrange(len(parent1.proto_squares))
 
         proto_squares_1 = parent1.proto_squares[:split_index] + parent2.proto_squares[split_index:]
@@ -97,6 +97,27 @@ class Individual:
 
         child1._update_and_mutate(proto_squares_1, parent1.size)
         child2._update_and_mutate(proto_squares_2, parent2.size)
+
+    @staticmethod
+    def crossover_uniform(parent1, parent2, child1, child2):
+        proto_squares_1, proto_squares_2 = zip(*[
+            (first, second) if random.random() > 0.5 else (second, first)
+            for first, second in zip(parent1.proto_squares, parent2.proto_squares)
+        ])
+
+        size_1, size_2 = (
+            (parent1.size, parent2.size)
+            if random.random() > 0.5 else
+            (parent2.size, parent1.size)
+        )
+
+        child1._update_and_mutate(proto_squares_1, size_1)
+        child2._update_and_mutate(proto_squares_2, size_2)
+
+    @staticmethod
+    def crossover(parent1, parent2, child1, child2):
+        # Individual.crossover_1_position(parent1, parent2, child1, child2)
+        Individual.crossover_uniform(parent1, parent2, child1, child2)
 
 
 class Genetic(Search):
@@ -127,9 +148,9 @@ class Genetic(Search):
         fitnesses = []
         for _ in range(self.iterations):
             population.sort(reverse=True)
-            new_population[:self.elitism_size] = deepcopy(population[:self.elitism_size])
-
             fitnesses.append(population[0].fitness)
+
+            new_population[:self.elitism_size] = deepcopy(population[:self.elitism_size])
 
             for i in range(self.elitism_size, self.population_size, 2):
                 child1, child2 = new_population[i], new_population[i+1]
