@@ -18,3 +18,12 @@ https://www.ac.tuwien.ac.at/wp/wp-content/uploads/Martin-N%C3%B6llenburg-dynlab.
 
 Sever je pozitivno y.
 Istok je pozitivno x.
+
+## TODO
+
+* Napisati README
+* Srediti map.py
+* Srediti main.py
+* Refaktorisati B algoritam
+* Optimizovati Genetic Search
+* Napistai Binary Genetic Search
