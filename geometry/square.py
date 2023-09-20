@@ -91,3 +91,12 @@ class Square:
             if first.has_overlap(second):
                 return True
         return False
+
+    @staticmethod
+    def get_no_overlap_length(squares):
+        length = 0
+        for first, second in itertools.combinations(squares, 2):
+            if first.has_overlap(second):
+                break
+            length += 1
+        return length

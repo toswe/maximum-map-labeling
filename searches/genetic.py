@@ -33,12 +33,12 @@ class Individual:
     def _generate_squares(self):
         self.squares = [Square.from_proto(psq, self.size) for psq in self.proto_squares]
 
-    def _calculate_fitness_old(self):
+    def _calculate_fitness_simple(self):
         self.fitness = self.size
         if Square.check_overlap(self.squares):
             self.fitness *= -1
 
-    def _calculate_fitness(self):
+    def _calculate_fitness_simple_with_overlaps(self):
         self.has_overlaps = False
         overlaps = 0
 
@@ -52,6 +52,16 @@ class Individual:
                 return
 
         self.fitness = self.size * (len(self.squares) - overlaps * 2)
+
+    def _calculate_fitness_bidirectional(self):
+        self.fitness = Square.get_no_overlap_length(self.squares)
+        self.fitness += Square.get_no_overlap_length(reversed(self.squares))
+        self.fitness *= self.size
+
+    def _calculate_fitness(self):
+        # self._calculate_fitness_simple()
+        # self._calculate_fitness_simple_with_overlaps()
+        self._calculate_fitness_bidirectional()
 
     def _should_mutate(self):
         return self.mutation_prob > random.random()
@@ -116,8 +126,8 @@ class Individual:
 
     @staticmethod
     def crossover(parent1, parent2, child1, child2):
-        # Individual.crossover_1_position(parent1, parent2, child1, child2)
-        Individual.crossover_uniform(parent1, parent2, child1, child2)
+        Individual.crossover_1_position(parent1, parent2, child1, child2)
+        # Individual.crossover_uniform(parent1, parent2, child1, child2)
 
 
 class Genetic(Search):
