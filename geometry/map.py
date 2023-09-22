@@ -3,7 +3,7 @@ import itertools
 import math
 
 from geometry.point import Point
-from geometry.square import ORIENTATIONS
+from geometry.square import ORIENTATIONS, OPPOSITE_ORIENTATIONS
 
 
 def _get_initial_limits():
@@ -41,20 +41,11 @@ class Map:
             if point1.x == point2.x or point1.y == point2.y:
                 continue
 
-            if point1.is_south_of(point2):
-                if point1.is_west_of(point2):
-                    limits_of_points[point1]['ne'] = min(limits_of_points[point1]['ne'], distance)
-                    limits_of_points[point2]['sw'] = min(limits_of_points[point2]['sw'], distance)
-                else:
-                    limits_of_points[point1]['se'] = min(limits_of_points[point1]['se'], distance)
-                    limits_of_points[point2]['nw'] = min(limits_of_points[point2]['nw'], distance)
-            else:
-                if point1.is_west_of(point2):
-                    limits_of_points[point1]['nw'] = min(limits_of_points[point1]['nw'], distance)
-                    limits_of_points[point2]['se'] = min(limits_of_points[point2]['se'], distance)
-                else:
-                    limits_of_points[point1]['sw'] = min(limits_of_points[point1]['sw'], distance)
-                    limits_of_points[point2]['ne'] = min(limits_of_points[point2]['ne'], distance)
+            direction = point1.get_direction_of(point2)
+            limits_of_points[point1][direction] = min(limits_of_points[point1][direction], distance)
+
+            op_dir = OPPOSITE_ORIENTATIONS[direction]
+            limits_of_points[point2][op_dir] = min(limits_of_points[point2][op_dir], distance)
 
         return limits_of_points
 

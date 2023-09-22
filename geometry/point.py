@@ -26,3 +26,9 @@ class Point:
 
     def is_west_of(self, point):
         return self.y < point.y
+
+    def get_direction_of(self, point):
+        return (
+            ('n' if self.is_south_of(point) else 's')
+            + ('e' if self.is_west_of(point) else 'w')
+        )
