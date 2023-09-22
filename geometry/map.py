@@ -19,16 +19,16 @@ class Map:
         self.size = size
 
         # Points is a dict where keys are points, and values are point limits in each direction
-        self.points = dict()
+        self.points = []
+        self.limits_of_points = dict()
+
         self._generate_points()
+        self._get_limits_of_points()
 
         self.square_size_candidates = self._get_possible_square_sizes()
 
-    def get_points(self):
-        return list(self.points.keys())
-
-    def _update_point_limits(self):
-        for point1, point2 in itertools.combinations(self.get_points(), 2):
+    def _get_limits_of_points(self):
+        for point1, point2 in itertools.combinations(self.points, 2):
             distance = point1.distance(point2)
 
             if point1.x == point2.x or point1.y == point2.y:
@@ -36,18 +36,18 @@ class Map:
 
             if point1.is_south_of(point2):
                 if point1.is_west_of(point2):
-                    self.points[point1]['ne'] = min(self.points[point1]['ne'], distance)
-                    self.points[point2]['sw'] = min(self.points[point2]['sw'], distance)
+                    self.limits_of_points[point1]['ne'] = min(self.limits_of_points[point1]['ne'], distance)
+                    self.limits_of_points[point2]['sw'] = min(self.limits_of_points[point2]['sw'], distance)
                 else:
-                    self.points[point1]['se'] = min(self.points[point1]['se'], distance)
-                    self.points[point2]['nw'] = min(self.points[point2]['nw'], distance)
+                    self.limits_of_points[point1]['se'] = min(self.limits_of_points[point1]['se'], distance)
+                    self.limits_of_points[point2]['nw'] = min(self.limits_of_points[point2]['nw'], distance)
             else:
                 if point1.is_west_of(point2):
-                    self.points[point1]['nw'] = min(self.points[point1]['nw'], distance)
-                    self.points[point2]['se'] = min(self.points[point2]['se'], distance)
+                    self.limits_of_points[point1]['nw'] = min(self.limits_of_points[point1]['nw'], distance)
+                    self.limits_of_points[point2]['se'] = min(self.limits_of_points[point2]['se'], distance)
                 else:
-                    self.points[point1]['sw'] = min(self.points[point1]['sw'], distance)
-                    self.points[point2]['ne'] = min(self.points[point2]['ne'], distance)
+                    self.limits_of_points[point1]['sw'] = min(self.limits_of_points[point1]['sw'], distance)
+                    self.limits_of_points[point2]['ne'] = min(self.limits_of_points[point2]['ne'], distance)
 
     def _generate_points(self):
         """
@@ -58,11 +58,8 @@ class Map:
 
         while len(self.points) < self.num_of_points:
             point = Point(random.uniform(0, self.size), random.uniform(0, self.size))
-            self.points[point] = _get_initial_limits()
-
-        self._update_point_limits()
-
-        return list(self.points)
+            self.points.append(point)
+            self.limits_of_points[point] = _get_initial_limits()
 
     def _get_possible_square_sizes(self):
         """
@@ -77,7 +74,7 @@ class Map:
         square_sizes_set = set()
         max_size = math.inf
 
-        for point_limits in self.points.values():
+        for point_limits in self.limits_of_points.values():
             limit = list(point_limits.values())
             # Add the limits in all 4 directions to square_sizes_set
             square_sizes_set.update(limit)
@@ -89,9 +86,5 @@ class Map:
             square_sizes_set.update(x / 2 for x in limit)
             max_size = min(max(limit), max_size)
 
-        # TODO optimize list reduction
-        #  (maybe write a sort function that discards values larger then max_size)
-        square_sizes_list = sorted(list(
-            size for size in square_sizes_set if size <= max_size
-        ))
-        return square_sizes_list
+        square_sizes_list = sorted(list(square_sizes_set))
+        return square_sizes_list[:square_sizes_list.index(max_size) + 1]

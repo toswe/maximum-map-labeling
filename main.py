@@ -21,7 +21,7 @@ def _plot_squares(squares, title):
 
 def main(num_of_points, map_size, seed):
     the_map = Map(num_of_points, map_size, seed)
-    points = list((point.x, point.y) for point in the_map.get_points()) # TODO Change this
+    points = list((point.x, point.y) for point in the_map.points) # TODO Change this
     print('Generated points:', points)
     print('Possible square size candidates:')
     print(len(the_map.square_size_candidates), the_map.square_size_candidates)
