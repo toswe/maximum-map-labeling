@@ -22,8 +22,7 @@ class Map:
 
     def _generate_points(self):
         """
-        A function that generates random points with their coordinates and limits
-        with Map objet's parametars
+        A function that generates random points using size and num_of_points.
         """
         random.seed(self.seed)
         return [
