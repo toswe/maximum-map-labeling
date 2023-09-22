@@ -21,10 +21,10 @@ def _plot_squares(squares, title):
 
 def main(num_of_points, map_size, seed):
     the_map = Map(num_of_points, map_size, seed)
-    points = list((point.x, point.y) for point in the_map.points) # TODO Change this
-    print('Generated points:', points)
-    print('Possible square size candidates:')
-    print(len(the_map.square_size_candidates), the_map.square_size_candidates)
+    print('Generated points:', the_map.points)
+    print()
+    print(f'There are {len(the_map.square_size_candidates)} possible square size candidates:')
+    print(the_map.square_size_candidates)
     print()
 
     search_algorithms = [
@@ -38,8 +38,10 @@ def main(num_of_points, map_size, seed):
         search = algorithm(the_map)
         squares = search.search()
 
+        print("Results of the {} algorithm are:".format(search.__class__.__name__))
         print("Optimal size: {:.2f}".format(squares[0].size))
-        print(f"Largest area: {int(squares[0].size ** 2) * len(points)}")
+        print("Largest area: {:.2f}".format(squares[0].size ** 2 * num_of_points))
+        print()
         print("Placings:")
         print(squares)
         print()
