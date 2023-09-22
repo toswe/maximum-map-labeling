@@ -145,7 +145,7 @@ class Genetic(Search):
 
         self.iterations = iterations
         self.population_size = int(population_size / 2) * 2
-        self.elitism_size = max(int(population_size * elitism_size), 2)
+        self.elitism_size = int(population_size * elitism_size / 2) * 2
         self.tournament_size = min(population_size, tournament_size)
         self.mutation_prob = mutation_prob
 

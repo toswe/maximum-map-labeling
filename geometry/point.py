@@ -2,7 +2,7 @@ class Point:
     def __init__(self ,x, y):
         self.x = x
         self.y = y
-        self.squares = []
+        self.squares = [] # TODO Move this
 
     def __eq__(self, point):
         if isinstance(point, Point):
