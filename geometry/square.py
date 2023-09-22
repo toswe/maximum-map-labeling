@@ -16,7 +16,7 @@ class Square:
         self.size = size
 
         if orientation not in ORIENTATIONS:
-            raise f"Wrong sqaure orientation '{orientation}'."
+            raise Exception(f"Wrong sqaure orientation '{orientation}'.")
 
         if orientation[0] == 'n':
             self.edge_up = point.y + size
