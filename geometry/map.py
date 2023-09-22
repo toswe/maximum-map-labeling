@@ -34,22 +34,18 @@ class Map:
             if point1.x == point2.x or point1.y == point2.y:
                 continue
 
-            if point1.x < point2.x:
-                if point1.y < point2.y:
-                    # point2 is north east
+            if point1.is_south_of(point2):
+                if point1.is_west_of(point2):
                     self.points[point1]['ne'] = min(self.points[point1]['ne'], distance)
                     self.points[point2]['sw'] = min(self.points[point2]['sw'], distance)
                 else:
-                    # point2 is south east
                     self.points[point1]['se'] = min(self.points[point1]['se'], distance)
                     self.points[point2]['nw'] = min(self.points[point2]['nw'], distance)
             else:
-                if point1.y < point2.y:
-                    # point2 is north west
+                if point1.is_west_of(point2):
                     self.points[point1]['nw'] = min(self.points[point1]['nw'], distance)
                     self.points[point2]['se'] = min(self.points[point2]['se'], distance)
                 else:
-                    # point2 is south west
                     self.points[point1]['sw'] = min(self.points[point1]['sw'], distance)
                     self.points[point2]['ne'] = min(self.points[point2]['ne'], distance)
 
