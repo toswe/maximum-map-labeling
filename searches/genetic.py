@@ -137,15 +137,15 @@ class Genetic(Search):
             iterations=10,
             population_size=100,
             elitism_size=0.2,
-            tournament_size=0.05,
-            mutation_prob=0.02,
+            tournament_size=5,
+            mutation_prob=0.01,
         ) -> None:
         super().__init__(map)
 
         self.iterations = iterations
-        self.population_size = population_size
+        self.population_size = int(population_size / 2) * 2
         self.elitism_size = max(int(population_size * elitism_size), 2)
-        self.tournament_size = max(int(population_size * tournament_size), 2)
+        self.tournament_size = min(population_size, tournament_size)
         self.mutation_prob = mutation_prob
 
     def _selection(self, population):
