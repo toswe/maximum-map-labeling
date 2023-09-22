@@ -3,16 +3,11 @@ import itertools
 import math
 
 from geometry.point import Point
+from geometry.square import ORIENTATIONS
 
 
 def _get_initial_limits():
-    # TODO Refactor this to use orientations from Square
-    return {
-        'ne' : math.inf,
-        'nw' : math.inf,
-        'se' : math.inf,
-        'sw' : math.inf,
-    }
+    return { orientation: math.inf for orientation in ORIENTATIONS }
 
 
 class Map:
