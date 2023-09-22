@@ -18,16 +18,23 @@ class Map:
         self.num_of_points = num_of_points
         self.size = size
 
-        # Points is a dict where keys are points, and values are point limits in each direction
-        self.points = []
-        self.limits_of_points = dict()
-
-        self._generate_points()
-        self._get_limits_of_points()
-
+        self.points = self._generate_points()
+        self.limits_of_points = self._get_limits_of_points()
         self.square_size_candidates = self._get_possible_square_sizes()
 
+    def _generate_points(self):
+        """
+        A function that generates random points with their coordinates and limits
+        with Map objet's parametars
+        """
+        return [
+            Point(random.uniform(0, self.size), random.uniform(0, self.size))
+            for _ in range(self.num_of_points)
+        ]
+
     def _get_limits_of_points(self):
+        limits_of_points = {point: _get_initial_limits() for point in self.points}
+
         for point1, point2 in itertools.combinations(self.points, 2):
             distance = point1.distance(point2)
 
@@ -36,30 +43,20 @@ class Map:
 
             if point1.is_south_of(point2):
                 if point1.is_west_of(point2):
-                    self.limits_of_points[point1]['ne'] = min(self.limits_of_points[point1]['ne'], distance)
-                    self.limits_of_points[point2]['sw'] = min(self.limits_of_points[point2]['sw'], distance)
+                    limits_of_points[point1]['ne'] = min(limits_of_points[point1]['ne'], distance)
+                    limits_of_points[point2]['sw'] = min(limits_of_points[point2]['sw'], distance)
                 else:
-                    self.limits_of_points[point1]['se'] = min(self.limits_of_points[point1]['se'], distance)
-                    self.limits_of_points[point2]['nw'] = min(self.limits_of_points[point2]['nw'], distance)
+                    limits_of_points[point1]['se'] = min(limits_of_points[point1]['se'], distance)
+                    limits_of_points[point2]['nw'] = min(limits_of_points[point2]['nw'], distance)
             else:
                 if point1.is_west_of(point2):
-                    self.limits_of_points[point1]['nw'] = min(self.limits_of_points[point1]['nw'], distance)
-                    self.limits_of_points[point2]['se'] = min(self.limits_of_points[point2]['se'], distance)
+                    limits_of_points[point1]['nw'] = min(limits_of_points[point1]['nw'], distance)
+                    limits_of_points[point2]['se'] = min(limits_of_points[point2]['se'], distance)
                 else:
-                    self.limits_of_points[point1]['sw'] = min(self.limits_of_points[point1]['sw'], distance)
-                    self.limits_of_points[point2]['ne'] = min(self.limits_of_points[point2]['ne'], distance)
+                    limits_of_points[point1]['sw'] = min(limits_of_points[point1]['sw'], distance)
+                    limits_of_points[point2]['ne'] = min(limits_of_points[point2]['ne'], distance)
 
-    def _generate_points(self):
-        """
-        A function that generates random points with their coordinates and limits
-        with Map objet's parametars
-        
-        """
-
-        while len(self.points) < self.num_of_points:
-            point = Point(random.uniform(0, self.size), random.uniform(0, self.size))
-            self.points.append(point)
-            self.limits_of_points[point] = _get_initial_limits()
+        return limits_of_points
 
     def _get_possible_square_sizes(self):
         """
