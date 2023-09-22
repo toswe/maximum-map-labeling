@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from searches.search import Search
 from geometry.square import ORIENTATIONS, ProtoSquare, Square
 
+
 class Individual:
     def __init__(self, map, mutation_prob) -> None:
         self.map = map
@@ -152,6 +153,8 @@ class Genetic(Search):
         return max(random.sample(population, self.tournament_size))
 
     def search(self):
+        random.seed()
+
         population = [Individual(self.map, self.mutation_prob) for _ in range(self.population_size)]
         new_population = [Individual(self.map, self.mutation_prob) for _ in range(self.population_size)]
 
