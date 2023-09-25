@@ -36,14 +36,10 @@ def main(num_of_points, map_size, seed):
 
     for algorithm in search_algorithms:
         search = algorithm(the_map)
-<<<<<<< HEAD
-        squares = search.search()
-=======
         squares, elapsed = search.search_with_time_measure()
 
         print("Results of the {} algorithm are:".format(search.__class__.__name__))
         print("Time elapsed: {:.2f}s".format(elapsed))
->>>>>>> master
         print("Optimal size: {:.2f}".format(squares[0].size))
         print("Largest area: {:.2f}".format(squares[0].size ** 2 * num_of_points))
         print()
