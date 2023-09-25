@@ -1,5 +1,4 @@
 import argparse
-import time
 
 from matplotlib import pyplot as plt
 
@@ -35,11 +34,7 @@ def main(num_of_points, map_size, seed):
 
     for algorithm in search_algorithms:
         search = algorithm(the_map)
-        start_time = time.time()
         squares = search.search()
-        end_time = time.time()
-        execution_time = end_time - start_time
-        print(f"Execution time :{execution_time:.2f}s")
         print("Optimal size: {:.2f}".format(squares[0].size))
         print(f"Largest area: {int(squares[0].size ** 2) * len(points)}")
         print("Placings:")
