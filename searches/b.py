@@ -164,7 +164,7 @@ class B(OptimalSearch):
             return False
         return True
 
-    def satisfiable(solution):
+    def is_satisfiable(solution):
         """
         A function that checks if a solution is satisfiable by comparing 
         the number of points with the number of points used.
@@ -202,7 +202,7 @@ class B(OptimalSearch):
         if not solutions:
             return False    
         for solution in solutions:
-            if B.satisfiable(solution):
+            if B.is_satisfiable(solution):
                 for key, value in solution.items():
                     if not value:
                         self.remove_candidat(key)
