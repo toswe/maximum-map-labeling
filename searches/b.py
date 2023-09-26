@@ -86,7 +86,7 @@ class B(OptimalSearch):
                 break
         self.get_non_conflicts()
 
-    def posible(self):
+    def is_possible(self):
         """
         A function that returns False if any point has no assigned squares, else True
         """
@@ -95,11 +95,39 @@ class B(OptimalSearch):
                 return False
         return True
 
+    def non_conflict_point(self,point):
+        candidat_remove = []
+        chosen_square = random.choice(self.non_conflicts[point])
+        for square in point.squares:
+            if square != chosen_square:
+                candidat_remove.append(square)
+        self.non_conflicts[point] = [chosen_square]
+        return candidat_remove
+
+    def last_square(self,point):
+        candidats_remove = []
+        if point.squares[0] in self.conflicts:
+            for square in self.conflicts[point.squares[0]]:
+                candidats_remove.append(square)
+            self.non_conflicts[point] = point.squares[0]
+        return candidats_remove
+
+    def overlap_last_two(self,point):
+        candidats_remove = []
+        for square in point.squares:
+            if square in self.conflicts:
+                for sq1, sq2 in itertools.combinations(self.conflicts[square], 2):
+                    if sq1.point == sq2.point and len(sq1.point.squares) == 2:
+                        candidats_remove.append(square)
+                        break
+        return candidats_remove
+
     def _phase_2(self):
         """
         A function that goes through all the points and updates points and squares based on the following criteria:
             -Returns False if the point doesn't have a single candidate,
-            -If point has non-conflit square, chooses a random candidate from the given point that is not in conflict and deletes all the others,
+            -If point has non-conflit square, chooses a random candidate from the given point that
+                is not in conflict and deletes all the others,
             -If it's the last square of the given point, it deletes all those it conflicts with,
             -It deletes all candidates of the point that overlap with the last two squares of some other point
         Returns:
@@ -111,39 +139,28 @@ class B(OptimalSearch):
             stack.append(p)
             stack_remove = []
             for point in stack:
-                candidat_remove = []
+                candidats_remove = []
 
                 if len(point.squares) == 0:
                     return False
 
                 elif point in self.non_conflicts:
-                    chosen_square = random.choice(self.non_conflicts[point])
-                    for square in point.squares:
-                        if square != chosen_square:
-                            candidat_remove.append(square)
-                    self.non_conflicts[point] = [chosen_square]
+                    candidats_remove += self.non_conflict_point(point)
                     stack_remove.append(point)
 
                 elif len(point.squares) == 1:
-                    if point.squares[0] in self.conflicts:
-                        for square in self.conflicts[point.squares[0]]:
-                            candidat_remove.append(square)
-                        self.non_conflicts[point] = point.squares[0]
+                    candidats_remove += self.last_square(point)
 
                 else:
-                    for square in point.squares:
-                        if square in self.conflicts:
-                            for sq1, sq2 in itertools.combinations(self.conflicts[square], 2):
-                                if sq1.point == sq2.point and len(sq1.point.squares) == 2:
-                                    candidat_remove.append(square)
-                                    break
-                if candidat_remove:
-                    for candidat in candidat_remove:
+                    candidats_remove += self.overlap_last_two(point)
+
+                if candidats_remove:
+                    for candidat in candidats_remove:
                         self.remove_candidat(candidat)
             if stack_remove:
                 for remove in stack_remove:
                     stack.remove(remove)
-        if not self.posible():
+        if not self.is_possible():
             return False
         return True
 
@@ -163,6 +180,21 @@ class B(OptimalSearch):
         if x_t and y_t and y_sq in self.conflicts[x_sq]:
             return False
         return True
+
+
+    def solution_to_dict(solution):
+        """
+        A function that converst solution from constraints {String : {Square : Bool}}
+        to {Square : Bool}
+        Returns:
+            {Square : Bool} dictionary
+        """
+        keys = []
+        values = []
+        for sol in solution.values():
+            keys = keys + list(sol.keys())
+            values = values + list(sol.values())
+        return dict(zip(keys, values))
 
     def is_satisfiable(solution):
         """
@@ -201,7 +233,8 @@ class B(OptimalSearch):
         solutions = problem.getSolutions()
         if not solutions:
             return False    
-        for solution in solutions:
+        finals = [B.solution_to_dict(solution) for solution in solutions]
+        for solution in finals:
             if B.is_satisfiable(solution):
                 for key, value in solution.items():
                     if not value:
@@ -209,11 +242,11 @@ class B(OptimalSearch):
                 return True
         return False
 
-    def remove_i(self, i):
+    def limit_squares(self, i):
         """
-        A function that removes one square from points with (4 - i) number of squares with the most conflicts
+        A function that removes one square from points with i number of squares with the most conflicts
         Args:
-            i - (4 - i) required number of squares
+            i - required number of squares
         Returns:
             False - if point has no squares
             True - if squares are successfully removed
@@ -221,7 +254,7 @@ class B(OptimalSearch):
         for point in self.points:
             if not point.squares:
                 return False
-            if len(point.squares) == 4 - i:
+            if len(point.squares) == i:
                 max_conf = 0
                 max_sq = point.squares[0]
                 for square in point.squares:
@@ -241,18 +274,18 @@ class B(OptimalSearch):
             False - if the placing isn't possible
             list( Square ) - if the placing is found
         """
-        self._phase_1()
-        self.remove_i(0)
+        self.limit_squares(4)
         if not self._phase_2():
             return False
-        self.remove_i(1)
+        self.limit_squares(3)
         if not self._phase_2():
             return False
         if self.two_sat():
-            if self.posible():
+            if self.is_possible():
                 return [point.squares[0] for point in self.points]
         return False
 
     def _search_size(self, square_size):
         self.size = square_size
+        self._phase_1()
         return self._phase_3()
