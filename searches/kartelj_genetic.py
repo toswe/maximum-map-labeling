@@ -14,8 +14,10 @@ class Individual:
         self.mutation_prob = mutation_prob
 
         self.sizes = map.square_size_candidates
-        self.orientations = [random.choice(ORIENTATIONS) for _ in self.map.points]
+        self.orientations = [random.choice(ORIENTATIONS) for _ in map.points]
 
+        self.points = map.points
+        self.close_points = map.close_points
         self.fitness = self._calculate_fitness()        
 
     def __lt__(self, other):
@@ -27,13 +29,19 @@ class Individual:
     def _generate_squares(self, size):
         return [
             Square(p, o, size)
-            for p, o in zip(self.map.points, self.orientations)
+            for p, o in zip(self.points, self.orientations)
         ]
 
     def _search_size(self, size):
-        # TODO Implement a version that doesn't generate squares and optimizes search
-        if Square.check_overlap(self._generate_squares(size)):
-            return False
+        for first_index, indexes in self.close_points.items():
+            # TODO Implement a helper method insted of creating squares
+            first = Square(self.points[first_index], self.orientations[first_index], size)
+
+            for second_index in indexes:
+                second = Square(self.points[second_index], self.orientations[second_index], size)
+                if first.has_overlap(second):
+                    return False
+
         return size
 
     def _calculate_fitness(self):
