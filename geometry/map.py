@@ -19,6 +19,7 @@ class Map:
         self.points = self._generate_points()
         self.limits_of_points = self._get_limits_of_points()
         self.square_size_candidates = self._get_possible_square_sizes()
+        self.close_points = self._calculate_close_points()
 
     def _generate_points(self):
         """
@@ -77,3 +78,20 @@ class Map:
 
         square_sizes_list = sorted(list(square_sizes_set))
         return square_sizes_list[:square_sizes_list.index(max_size) + 1]
+
+
+    def _calculate_close_points(self):
+        """
+        A function that finds all the points that are closer than double the maximum square size.
+        Returns:
+            A dict where the keys are point indexes and the values a list of close point indexes
+
+        """
+        close_points = {i: [] for i in range(self.num_of_points)}
+
+        max_distance = self.square_size_candidates[-1] * 2
+        for first, second in itertools.combinations(self.points, 2):
+            if first.distance(second) < max_distance:
+                close_points[self.points.index(first)].append(self.points.index(second))
+
+        return {k: v for k, v in close_points.items() if v}
