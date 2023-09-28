@@ -14,7 +14,7 @@ class Individual:
         self.mutation_prob = mutation_prob
 
         self.sizes = map.square_size_candidates
-        self.proto_squares = [ProtoSquare(p, random.choice(ORIENTATIONS)) for p in self.map.points]
+        self.orientations = [random.choice(ORIENTATIONS) for _ in self.map.points]
 
         self.fitness = self._calculate_fitness()        
 
@@ -25,7 +25,10 @@ class Individual:
         return str(self.fitness)
     
     def _generate_squares(self, size):
-        return [Square.from_proto(sq, size) for sq in self.proto_squares]
+        return [
+            Square(p, o, size)
+            for p, o in zip(self.map.points, self.orientations)
+        ]
 
     def _search_size(self, size):
         # TODO Implement a version that doesn't generate squares and optimizes search
@@ -59,36 +62,36 @@ class Individual:
     def _should_mutate(self):
         return self.mutation_prob > random.random()
 
-    def _mutate_proto_squares(self):
-        for i in range(len(self.proto_squares)):
+    def _mutate(self):
+        for i in range(len(self.orientations)):
             if self._should_mutate():
-                self.proto_squares[i].orientation = random.choice(ORIENTATIONS) # TODO Check if same orientation
+                self.orientations[i] = random.choice(ORIENTATIONS)
 
-    def _update_and_mutate(self, proto_squares):
-        self.proto_squares = deepcopy(proto_squares)
+    def _update_and_mutate(self, orientations):
+        self.orientations = orientations.copy()
 
-        self._mutate_proto_squares()
+        self._mutate()
         self.fitness = self._calculate_fitness()
 
     @staticmethod
     def crossover_1_position(parent1, parent2, child1, child2):
-        split_index = random.randrange(len(parent1.proto_squares))
+        split_index = random.randrange(len(parent1.orientations))
 
-        proto_squares_1 = parent1.proto_squares[:split_index] + parent2.proto_squares[split_index:]
-        proto_squares_2 = parent2.proto_squares[:split_index] + parent1.proto_squares[split_index:]
+        orientations_1 = parent1.orientations[:split_index] + parent2.orientations[split_index:]
+        orientations_2 = parent2.orientations[:split_index] + parent1.orientations[split_index:]
 
-        child1._update_and_mutate(proto_squares_1)
-        child2._update_and_mutate(proto_squares_2)
+        child1._update_and_mutate(orientations_1)
+        child2._update_and_mutate(orientations_2)
 
     @staticmethod
     def crossover_uniform(parent1, parent2, child1, child2):
-        proto_squares_1, proto_squares_2 = zip(*[
+        orientations_1, orientations_2 = zip(*[
             (first, second) if random.random() > 0.5 else (second, first)
-            for first, second in zip(parent1.proto_squares, parent2.proto_squares)
+            for first, second in zip(parent1.orientations, parent2.orientations)
         ])
 
-        child1._update_and_mutate(proto_squares_1)
-        child2._update_and_mutate(proto_squares_2)
+        child1._update_and_mutate(list(orientations_1))
+        child2._update_and_mutate(list(orientations_2))
 
     @staticmethod
     def crossover(parent1, parent2, child1, child2):
