@@ -18,6 +18,9 @@ class Point:
     def __str__(self):
         return "(x: {:.2f}, y: {:.2f})".format(self.x, self.y)
 
+    def __lt__(self,other):
+        return self.x**2 + self.y**2 < other.x**2 + other.y**2
+
     def distance(self, point):
         return max(abs(self.x - point.x), abs(self.y - point.y))
 

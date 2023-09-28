@@ -101,7 +101,6 @@ class B(OptimalSearch):
         for square in point.squares:
             if square != chosen_square:
                 candidat_remove.append(square)
-        self.non_conflicts[point] = [chosen_square]
         return candidat_remove
 
     def last_square(self,point):
@@ -109,7 +108,6 @@ class B(OptimalSearch):
         if point.squares[0] in self.conflicts:
             for square in self.conflicts[point.squares[0]]:
                 candidats_remove.append(square)
-            self.non_conflicts[point] = point.squares[0]
         return candidats_remove
 
     def overlap_last_two(self,point):
@@ -158,89 +156,58 @@ class B(OptimalSearch):
                     for candidat in candidats_remove:
                         self.remove_candidat(candidat)
             if stack_remove:
-                for remove in stack_remove:
-                    stack.remove(remove)
+                for point in stack_remove:
+                    stack.remove(point)
         if not self.is_possible():
             return False
         return True
 
-    def overlap(self, x, y):
-        """
-        A function that is used for constraint checking; 
-        It verifies whether the given two squares are in conflict if both are used.
-        Args:
-            x - dictionary {Square : Bool} that says if square x is used or not
-            y - dictionary {Square : Bool} that says if square y is used or not
-        Returns:
-            False - if x and y are both used and overlap with ona another
-            True - if one of them is not used or they don't overlap
-        """
-        x_sq, x_t = list(x.items())[0]
-        y_sq, y_t = list(y.items())[0]
-        if x_t and y_t and y_sq in self.conflicts[x_sq]:
-            return False
-        return True
-
-
-    def solution_to_dict(solution):
-        """
-        A function that converst solution from constraints {String : {Square : Bool}}
-        to {Square : Bool}
-        Returns:
-            {Square : Bool} dictionary
-        """
-        keys = []
-        values = []
-        for sol in solution.values():
-            keys = keys + list(sol.keys())
-            values = values + list(sol.values())
-        return dict(zip(keys, values))
-
-    def is_satisfiable(solution):
-        """
-        A function that checks if a solution is satisfiable by comparing 
-        the number of points with the number of points used.
-        Args:
-            solution - solution from constraint (dict(Square,bool))
-        Returns:
-            True - if the number of points used is equal to total number of points
-            False - if he number of points used differ from total number of points
-        """
-        points = set([square.point for square in solution.keys()])
-        points_true = set([square.point for square, value in solution.items() if value])
-        if points == points_true:
-            return True
-        else:
-            return False
-
     def two_sat(self):
-        """
-        A function that uses python-constraint to check if there is a solution
-        for the current state in overlapping squares and updates it.
-        Returns:
-            True - if there is a soluton and deletes unused candidates
-            False - if there is no solution
-        """
-        if not self.conflicts:
+        points = set([square.point for square in self.conflicts])
+        cnf = constraint.Problem()
+
+        if not points:
             return True
-        problem = constraint.Problem()
-        str_conf = []
-        for square in self.conflicts.keys():
-            str_conf.append(str(square))
-            problem.addVariable(str(square), [{square: True},{square: False}])
-        for str1,str2 in itertools.combinations(str_conf,2):
-            problem.addConstraint(self.overlap, (str1,str2))
-        solutions = problem.getSolutions()
-        if not solutions:
-            return False    
-        finals = [B.solution_to_dict(solution) for solution in solutions]
-        for solution in finals:
-            if B.is_satisfiable(solution):
-                for key, value in solution.items():
-                    if not value:
-                        self.remove_candidat(key)
-                return True
-        return False
+        
+        for point in points:
+            cnf.addVariable(point,[True,False])
+
+        for p1,p2 in itertools.combinations(points,2):
+            if len(p1.squares) == 1 and len(p2.squares) == 1:
+                if p2.squares[0] in self.conflicts[p1.squares[0]]:
+                    return False
+                cnf.addConstraint(lambda p1, p2: (p1 and p2), (p1, p2))
+            elif len(p1.squares) == 1:
+                if p2.squares[0] in self.conflicts[p1.squares[0]]:
+                    cnf.addConstraint(lambda p1, p2: p1 and (not p2), (p1, p2))
+                if p2.squares[1] in self.conflicts[p1.squares[0]]:
+                    cnf.addConstraint(lambda p1, p2: p1 and p2, (p1, p2))
+            elif len(p2.squares) == 1:
+                if p2.squares[0] in self.conflicts[p1.squares[0]]:
+                    cnf.addConstraint(lambda p1, p2: (not p1) and p2, (p1, p2))
+                if p2.squares[0] in self.conflicts[p1.squares[1]]:
+                    cnf.addConstraint(lambda p1, p2: p1 and p2,(p1,p2))
+            else:
+                if p2.squares[0] in self.conflicts[p1.squares[0]]:
+                    cnf.addConstraint(lambda p1, p2: not(p1 and p2), (p1, p2))
+                if p2.squares[1] in self.conflicts[p1.squares[0]]:
+                    cnf.addConstraint(lambda p1, p2: not(p1 and (not p2)), (p1, p2))
+                if p2.squares[0] in self.conflicts[p1.squares[1]]:
+                    cnf.addConstraint(lambda p1, p2: not((not p1) and p2),(p1,p2))
+                if p2.squares[1] in self.conflicts[p1.squares[1]]:
+                    cnf.addConstraint(lambda p1, p2: not((not p1) and (not p2)), (p1, p2))
+
+        solution = cnf.getSolution()
+        if not solution:
+            return False
+        for key, value in solution.items():
+            if value:
+                if len(key.squares) == 1:
+                    continue
+                self.remove_candidat(key.squares[1])
+            else:
+                self.remove_candidat(key.squares[0])
+        return True
 
     def limit_squares(self, i):
         """
@@ -252,8 +219,6 @@ class B(OptimalSearch):
             True - if squares are successfully removed
         """
         for point in self.points:
-            if not point.squares:
-                return False
             if len(point.squares) == i:
                 max_conf = 0
                 max_sq = point.squares[0]
@@ -262,7 +227,7 @@ class B(OptimalSearch):
                         max_conf = len(self.conflicts[square])
                         max_sq = square
                 self.remove_candidat(max_sq)
-        return True
+
 
     def _phase_3(self):
         """
