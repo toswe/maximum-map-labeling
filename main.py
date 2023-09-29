@@ -7,7 +7,7 @@ from searches.brute_force import BruteForce
 from searches.brute_force_cache import BruteForceCache
 from searches.b import B
 from searches.genetic import Genetic
-from searches.kartelj_genetic import KarteljGenetic
+from searches.improved_genetic import ImprovedGenetic
 
 MAP_SIZE = 100.0
 SEED = 42
@@ -33,7 +33,7 @@ def main(num_of_points, map_size, seed):
         # BruteForceCache,
         # B,
         # Genetic,
-        KarteljGenetic,
+        ImprovedGenetic,
     ]
 
     for algorithm in search_algorithms:

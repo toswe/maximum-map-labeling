@@ -107,7 +107,7 @@ class Individual:
         Individual.crossover_uniform(parent1, parent2, child1, child2)
 
 
-class KarteljGenetic(Search):
+class ImprovedGenetic(Search):
     def __init__(
             self,
             map,
