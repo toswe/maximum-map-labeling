@@ -109,6 +109,10 @@ Sledeci parametri se prosledjuju prilikom iniciranja algoritma:
 * `tournament_size` - velicina turnira
 * `mutation_prob` - verovatnoca mutacije
 
+### ImprovedGenetic
+
+TODO
+
 ## Radovi
 https://www.sciencedirect.com/science/article/pii/S0925772196000077
 
