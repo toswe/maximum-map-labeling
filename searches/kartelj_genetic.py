@@ -111,7 +111,7 @@ class KarteljGenetic(Search):
     def __init__(
             self,
             map,
-            iterations=20,
+            iterations=50,
             population_size=100,
             elitism_size=0.2,
             tournament_size=5,

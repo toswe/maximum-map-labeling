@@ -3,22 +3,24 @@ import time
 from geometry.map import Map
 from searches.b import B
 from searches.genetic import Genetic
+from searches.kartelj_genetic import KarteljGenetic
 
 MAP_SIZE = 100
-NUM_OF_SEEDS = 2
+NUM_OF_SEEDS = 10
 NUM_OF_POINTS = [
     5,
     10,
     20,
     100,
-    # 200,
-    # 1000,
-    # 2000,
-    # 10000,
+    200,
+    1000,
+    2000,
+    10000,
 ]
 SEARCH_ALGORITHMS = [
-    B,
-    Genetic,
+    # B,
+    # Genetic,
+    KarteljGenetic,
 ]
 
 
