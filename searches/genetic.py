@@ -22,6 +22,7 @@ class Individual:
 
         self.max_overlaps = 3 # TODO Extract this
         self.fitness = 0
+        self.max_combinations = len(self.squares) * (len(self.squares) - 1) / 2
         self.has_overlaps = False
         self._calculate_fitness()
 
@@ -56,13 +57,19 @@ class Individual:
 
     def _calculate_fitness_bidirectional(self):
         self.fitness = Square.get_no_overlap_length(self.squares)
+        if self.fitness == self.max_combinations:
+            self.fitness *= 2 * self.size
+            self.has_overlaps = False
+            return
+
+        self.has_overlaps = True
         self.fitness += Square.get_no_overlap_length(reversed(self.squares))
         self.fitness *= self.size
 
     def _calculate_fitness(self):
         # self._calculate_fitness_simple()
-        # self._calculate_fitness_simple_with_overlaps()
-        self._calculate_fitness_bidirectional()
+        self._calculate_fitness_simple_with_overlaps()
+        # self._calculate_fitness_bidirectional()
 
     def _should_mutate(self):
         return self.mutation_prob > random.random()
@@ -135,7 +142,7 @@ class Genetic(Search):
     def __init__(
             self,
             map,
-            iterations=10,
+            iterations=100,
             population_size=100,
             elitism_size=0.2,
             tournament_size=5,
@@ -173,7 +180,8 @@ class Genetic(Search):
 
             population, new_population = new_population, population
 
-        # subplot = plt.figure().add_subplot()
-        # subplot.plot(fitnesses)
+        subplot = plt.figure().add_subplot()
+        subplot.title.set_text(f"iters: {self.iterations} - pop: {self.population_size}")
+        subplot.plot(fitnesses)
 
         return max(p for p in population if not p.has_overlaps).squares
