@@ -4,6 +4,7 @@ U ovom repozitorijumu se nalazi kod za resavanje sledeceg probema:
 
 https://www.csc.kth.se/~viggo/wwwcompendium/node269.html#8287
 
+Prezentacija se moze pronaci [ovde](https://www.canva.com/design/DAFvwybebbI/6tOCjgIs04zlCXa-88sKJQ/view).
 
 ## Podesavanje
 
