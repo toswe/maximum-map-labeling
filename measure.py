@@ -3,7 +3,7 @@ import time
 from geometry.map import Map
 from searches.b import B
 from searches.genetic import Genetic
-from searches.kartelj_genetic import KarteljGenetic
+from searches.improved_genetic import ImprovedGenetic
 
 MAP_SIZE = 100
 NUM_OF_SEEDS = 10
@@ -20,7 +20,7 @@ NUM_OF_POINTS = [
 SEARCH_ALGORITHMS = [
     # B,
     # Genetic,
-    KarteljGenetic,
+    ImprovedGenetic,
 ]
 
 
